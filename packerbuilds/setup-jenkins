@@ -1,0 +1,55 @@
+#!/bin/bash
+# Example ideas of usage on jenkins, want to vision control to an extent how jenkins runs before calling packer
+# OS_BUILD_CONF_NAME="$(./setup-jenkins -o osconf "ubuntu")"
+# SHELL_PROVISIONER_NAME="$(./setup-jenkins -o provisioner "ubuntu")"
+# PACKER_BUILD_TEMPLATE_NAME="$(./setup-jenkins -o template "ubuntu")"
+#
+# Examples of how setup might go (sudo code):
+# os_type="$1"
+# case $os_type:
+#   "ubuntu-16.04-server-amd64"):   ... *specfic --> generic (can be deteremined by some form of regex)*
+#   "ubuntu"):  OS_BUILD_CONF_NAME="preseed.cfg"
+#               SHELL_PROVISIONER_NAME="shell-provisioner-apt-get.sh"
+#               PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
+#               ;;
+#   *):         
+#               OS_BUILD_CONF_NAME=""
+#               SHELL_PROVISIONER_NAME=""
+#               PACKER_BUILD_TEMPLATE_NAME=""
+# 
+# # looking at the $VALUE passed in the option '-o'
+# if [ -o $VALUE == "osconf" ] && [ -n $OS_BUILD_CONF_NAME ] # should not be empty string
+#   echo $OS_BUILD_CONF_NAME
+# elif [ -o $VALUE == "provisioner" ] && [ -n $SHELL_PROVISIONER_NAME ] # should not be empty string
+#   echo $SHELL_PROVISIONER_NAME
+# elif [ -o $VALUE == "provisioner" ] && [ -n $PACKER_BUILD_TEMPLATE_NAME ] # should not be empty string
+#   echo $PACKER_BUILD_TEMPLATE_NAME
+# else 
+#   exit 1
+#
+# exit 0
+#
+# Jenkins project names:
+# packer-ubuntu-builds
+# packer-debian-builds
+# etc...
+#
+# Build/Setup Steps:
+# 1. Select OS of choice through choice parameter (Ubuntu)
+# 2. Select OS Version of choice through choice parameter (Ubuntu)
+# 2. Misc OS options (e.g. x86_64-Minimal-DVD-1, x86_64-Desktop-DVD-1)
+# 3. Choose hypervisor of choice (virtualbox)
+# 4. Env Variable Input (this will effect more so how the options below run incase of custom needs, though this shoudn't be the case majority of the time)
+# 5. Clone repos to get resources needed
+# 6. run setup-jenkins and set-packer-dirstruct
+#   - know what resources to move and then create the directory structure to run packer in
+# 
+# 7. move resources into new directory, cd into new directory and run packer
+# ???. we want newer builds to replace older builds, not sure how to configure jenkins todo this
+#
+#
+#
+#
+#
+#
+#
