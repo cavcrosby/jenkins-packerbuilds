@@ -1,8 +1,60 @@
 #!/bin/bash
 # Example ideas of usage on jenkins, want to vision control to an extent how jenkins runs before calling packer
-# OS_BUILD_CONF_NAME="$(./setup-jenkins -o osconf "ubuntu")"
-# SHELL_PROVISIONER_NAME="$(./setup-jenkins -o provisioner "ubuntu")"
-# PACKER_BUILD_TEMPLATE_NAME="$(./setup-jenkins -o template "ubuntu")"
+# OS_BUILD_CONF_NAME="$(./setup-jenkins -o osconf $OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION $OPERATING_SYSTEM_MISC $HYPERVISOR)"
+# SHELL_PROVISIONER_NAME="$(./setup-jenkins -o provisioner $OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION $OPERATING_SYSTEM_MISC $HYPERVISOR)"
+# PACKER_BUILD_TEMPLATE_NAME="$(./setup-jenkins -o template $OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION $OPERATING_SYSTEM_MISC $HYPERVISOR)"
+#
+#
+
+# getopts should worry about any flags and their arguments
+# all jenkins should care about is passing in these parameters
+# no need to string them together
+# set -e incase an error happens, if so, jenkins should be ready to eject and stop the build
+# ...
+set -e
+PROGRAM_NAME="setup-jenkins"
+OPERATING_SYSTEM=$1
+OPERATING_SYSTEM_VERSION=$2
+OPERATING_SYSTEM_MISC=$3
+HYPERVISOR=$4
+
+# -o is for output
+# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins
+# perhaps implement a -h for helper string
+getopts "o:" opt
+# echo $OPTARG
+# echo $opt
+
+case "$opt" in
+    # -o helps determine which packer build configuration to output
+    # expected values: osconf, provisioner, template
+    "o")    OUTPUT_CONF=$OPTARG
+            ;;
+    ":")    exit 1
+            ;;
+    "*")    ;;
+esac
+
+# we may want to put somewhere that we check to make sure the output_conf is a configuration that can be sent to stdout...
+
+
+# jenkins should not worry about hashs, though, this script might worry about it to some extent
+# misc should have the 'dash' appended to it, not so much with the version for the OS
+# ISO_STRING="${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}${OPERATING_SYSTEM_MISC}"
+# case "$ISO_STRING" in
+#     #"ubuntu-16.04-server-amd64")   ... *specfic --> generic (can be deteremined by some form of pattern matching)*
+#     "ubuntu*")  OS_BUILD_CONF_NAME="preseed.cfg"
+#                 SHELL_PROVISIONER_NAME="shell-provisioner-apt-get.sh"
+#                 PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
+#                 ;;
+#     *)         
+#                 OS_BUILD_CONF_NAME=""
+#                 SHELL_PROVISIONER_NAME=""
+#                 PACKER_BUILD_TEMPLATE_NAME=""
+#                 ;;
+# esac
+
+#
 #
 # Examples of how setup might go (sudo code):
 # os_type="$1"
@@ -18,11 +70,11 @@
 #               PACKER_BUILD_TEMPLATE_NAME=""
 # 
 # # looking at the $VALUE passed in the option '-o'
-# if [ -o $VALUE == "osconf" ] && [ -n $OS_BUILD_CONF_NAME ] # should not be empty string
+# if [ $OUTPUT_CONF == "osconf" ] && [ -n $OS_BUILD_CONF_NAME ] # should not be empty string
 #   echo $OS_BUILD_CONF_NAME
-# elif [ -o $VALUE == "provisioner" ] && [ -n $SHELL_PROVISIONER_NAME ] # should not be empty string
+# elif [ $OUTPUT_CONF == "provisioner" ] && [ -n $SHELL_PROVISIONER_NAME ] # should not be empty string
 #   echo $SHELL_PROVISIONER_NAME
-# elif [ -o $VALUE == "provisioner" ] && [ -n $PACKER_BUILD_TEMPLATE_NAME ] # should not be empty string
+# elif [ $OUTPUT_CONF == "provisioner" ] && [ -n $PACKER_BUILD_TEMPLATE_NAME ] # should not be empty string
 #   echo $PACKER_BUILD_TEMPLATE_NAME
 # else 
 #   exit 1
