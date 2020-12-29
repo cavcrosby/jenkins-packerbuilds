@@ -32,7 +32,7 @@ case "$opt" in
             ;;
     ":")    exit 1
             ;;
-    "*")    ;;
+    *)    ;;
 esac
 
 # we may want to put somewhere that we check to make sure the output_conf is a configuration that can be sent to stdout...
