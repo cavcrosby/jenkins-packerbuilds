@@ -1,4 +1,4 @@
-switch (OS_VERSION){
+switch (OPERATING_SYSTEM_VERSION){
     case "18.04.2":
         return [
             "ubuntu-18.04.3-server-amd64.iso"

@@ -8,15 +8,16 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds"
 # Main build script for 'packerbuilds' project
 # that is hosted on a jenkins instance.
 # Globals:
-#   WORKSPACE                   (pre-defined)
-#   JENKINS_HOME                (pre-defined)
-#   PACKER_EXE                  (from build step)
-#   OPERATING_SYSTEM            (from jenkin parameters)
-#   OPERATING_SYSTEM_VERSION    (from jenkin parameters)
-#   ISO_FILE                    (from jenkin parameters)
-#   PACKER_BUILDER              (from jenkin parameters)
-#   OTHER_HOSTNAME_CRITERIA     (from jenkin parameters)
-#   RECORD_BUILDENV_VARS        (from jenkin parameters)
+#   WORKSPACE                           (pre-defined)
+#   JENKINS_HOME                        (pre-defined)
+#   DEFAULT_BRANCH_FOR_REPOS            TODO
+#   PACKER_EXE                          (from build step)
+#   OPERATING_SYSTEM                    (from jenkin parameters)
+#   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
+#   ISO_FILE                            (from jenkin parameters)
+#   PACKER_BUILDER                      (from jenkin parameters)
+#   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
+#   RECORD_BUILDENV_VARS                (from jenkin parameters)
 # Outputs:
 #   - ?
 #######################################
@@ -57,12 +58,12 @@ run_packerbuilds () {
         git clone "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     fi
     
-    HOSTNAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
-    if [ -n "$OTHER_HOSTNAME_CRITERIA" ]; then
-        HOSTNAME="${HOSTNAME}-${OTHER_HOSTNAME_CRITERIA}"
+    PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
+    if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
+        PACKERBUILD_NAME="${PACKERBUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
     fi
-    if [ -d "$HOSTNAME" ]; then
-        rm --recursive --force "$HOSTNAME"
+    if [ -d "$PACKERBUILD_NAME" ]; then
+        rm --recursive --force "$PACKERBUILD_NAME"
     fi
     GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL}" -o guest_os_type)"
     OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
@@ -82,8 +83,9 @@ run_packerbuilds () {
     cd "$PACKER_BUILD_ROOT_PATH" || exit 1
     ./"$PACKER_BUILD_EVALUSERVARS_NAME"
 
-    while read -r ENV_VAR_NAME < "$RECORD_BUILDENV_VARS"; do
-        echo "$ENV_VAR_NAME: ${"$ENV_VAR_NAME"}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
+    read -ra ENV_VAR_NAME_ARR -d '' <<< "$RECORD_BUILDENV_VARS"
+    for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
+        echo "$env_var: ${!env_var}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
     done
 
     "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
