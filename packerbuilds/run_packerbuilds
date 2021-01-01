@@ -1,0 +1,90 @@
+#!/bin/bash
+# Main build step should run this script when construting
+# a packer build.
+
+PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds"
+
+#######################################
+# Main build script for 'packerbuilds' project
+# that is hosted on a jenkins instance.
+# Globals:
+#   WORKSPACE                   (pre-defined)
+#   JENKINS_HOME                (pre-defined)
+#   PACKER_EXE                  (from build step)
+#   OPERATING_SYSTEM            (from jenkin parameters)
+#   OPERATING_SYSTEM_VERSION    (from jenkin parameters)
+#   ISO_FILE                    (from jenkin parameters)
+#   PACKER_BUILDER              (from jenkin parameters)
+#   OTHER_HOSTNAME_CRITERIA     (from jenkin parameters)
+#   RECORD_BUILDENV_VARS        (from jenkin parameters)
+# Outputs:
+#   - ?
+#######################################
+run_packerbuilds () {
+    set -e
+    cd "$WORKSPACE" || exit 1
+    ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
+    PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
+    PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
+    SETUP_PACKER_DIRSTRUCT="${PROJECT_SCRIPTS_DIRECTORY}/setup-packer-dirstruct"
+
+    OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
+    SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
+    PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/reap2sow1/packer-build-templates"
+    OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO")"
+    SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO")"
+    PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATE_REPOS")"
+
+    if [ -d "$OS_BUILD_CONFS_REPO_NAME" ]; then
+        cd "$OS_BUILD_CONFS_REPO_NAME"
+        git pull
+        cd ..
+    else
+        git clone "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
+    fi
+    if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
+        cd "$SHELL_PROVISIONERS_REPO_NAME"
+        git pull
+        cd ..
+    else
+        git clone "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
+    fi
+    if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
+        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME"
+        git pull
+        cd ..
+    else
+        git clone "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
+    fi
+    
+    HOSTNAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
+    if [ -n "$OTHER_HOSTNAME_CRITERIA" ]; then
+        HOSTNAME="${HOSTNAME}-${OTHER_HOSTNAME_CRITERIA}"
+    fi
+    if [ -d "$HOSTNAME" ]; then
+        rm --recursive --force "$HOSTNAME"
+    fi
+    GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL}" -o guest_os_type)"
+    OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
+    PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL}" -o template)"
+    PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL}" -o evaluservars)"       
+    read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "$ISO_FILE")" # output from sha256sum: hash iso_filename
+    SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
+
+    # shellcheck disable=1090
+    source "$SETUP_PACKER_DIRSTRUCT"
+    mv "${OS_BUILD_CONFS_REPO_NAME}/${OS_BUILD_CONF_NAME}" "$PACKER_HTTP_PATH"
+    mv "${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
+    mv "${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
+    mv "${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
+    mv "$PACKERBUILDS_CONF" "$PACKER_HTTP_PATH"
+
+    cd "$PACKER_BUILD_ROOT_PATH" || exit 1
+    ./"$PACKER_BUILD_EVALUSERVARS_NAME"
+
+    while read -r ENV_VAR_NAME < "$RECORD_BUILDENV_VARS"; do
+        echo "$ENV_VAR_NAME: ${"$ENV_VAR_NAME"}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
+    done
+
+    "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
+}

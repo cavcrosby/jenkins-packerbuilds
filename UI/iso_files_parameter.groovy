@@ -1,10 +1,10 @@
 switch (OS_VERSION){
     case "18.04.2":
         return [
-            "-server-amd64"
+            "ubuntu-18.04.3-server-amd64.iso"
 	    ]
     case "16.04":
         return [
-            "-server-amd64"         
+            "ubuntu-16.04-server-amd64.iso"         
 	    ]
 }

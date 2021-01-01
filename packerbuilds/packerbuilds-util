@@ -1,0 +1,122 @@
+#!/bin/bash
+
+usage () {
+	cat << _EOF_
+Usage: $PROGRAM_NAME 
+
+_EOF_
+}
+
+output_conf () {
+	# parameter values expected from jenkins env 
+	if [ -z "$ISO_FILE" ]; then
+		echo "${PROGRAM_NAME}: ISO_FILE not defined in jenkins env!"
+		exit 1
+	elif [ -z "$PACKER_BUILDER" ]; then
+		echo "${PROGRAM_NAME}: PACKER_BUILDER not defined in jenkins env!"
+		exit 1
+	fi
+
+	case "$ISO_FILE" in
+		#"ubuntu-16.04-server-amd64")   ... *specfic --> generic (can be deteremined by some form of pattern matching)*
+		"ubuntu"*)		OS_BUILD_CONF_NAME="preseed.cfg"
+						SHELL_PROVISIONER_NAME="shell-provisioner-apt-get.sh"
+						PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
+						PACKER_BUILD_EVALUSERVARS_NAME="ubuntu_preseed_build_evaluservars"
+						OS_CHOICE="$UBUNTU"
+						;;
+		*)         		echo "${PROGRAM_NAME}: build configurations not set for $ISO_FILE"
+						exit 1
+						;;
+	esac
+
+	case "$PACKER_BUILDER" in
+		"virtualbox-iso")	case "$OS_CHOICE" in
+								"$UBUNTU")		GUEST_OS_TYPE="Ubuntu_64"
+												;;
+								*)				echo "${PROGRAM_NAME}: unable to set guest os type $OS_CHOICE for $PACKER_BUILDER"
+												exit 1
+												;;
+							esac
+							;;
+		*)         			echo "${PROGRAM_NAME}: unknown packer builder (at least to me! The script!) $PACKER_BUILDER"
+							exit 1
+							;;
+	esac
+
+	case "$OUTPUT_CONF" in
+	"osconf")			echo "$OS_BUILD_CONF_NAME"
+						;;
+	"provisioner")		echo "$SHELL_PROVISIONER_NAME"
+						;;
+	"template")    		echo "$PACKER_BUILD_TEMPLATE_NAME"
+						;;
+	"evaluservars") 	echo "$PACKER_BUILD_EVALUSERVARS_NAME"
+						;;
+	"guest_os_type")	echo "$GUEST_OS_TYPE"
+						;;
+	*)    				echo "${PROGRAM_NAME}: invalid configuration to output -- $OUTPUT_CONF"
+						exit 1
+						;;
+	esac 
+}
+set -e
+PROGRAM_NAME="$(basename "$0")"
+# Define enum type.
+HYPERVISOR_GUEST_OS_CHOICES=(
+	UBUNTU
+)
+# initialize enums with values
+count=${#HYPERVISOR_GUEST_OS_CHOICES[@]}
+for ((i=0; i < count; i++)); do
+    name=${HYPERVISOR_GUEST_OS_CHOICES[$i]}
+    declare -r "${name}"="$i"
+done
+
+while getopts "ho:" opt; do
+	case "$opt" in
+	# NOTES:
+	# -o is for output
+	# -o helps determine which packer build configuration to output
+	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins
+	# specifying -o without an argument will pass in ':' for 'opt'
+	"o")    OUTPUT_CONF=$OPTARG
+			output_conf
+			;;
+	"h")	usage
+			exit 0
+			;;
+	":")    echo "${PROGRAM_NAME}: an argument is required for -- $OPTARG"
+			exit 1
+			;;
+    *)    ;;
+    esac
+done
+
+#
+# exit 0
+#
+# Jenkins project names:
+# packer-ubuntu-builds
+# packer-debian-builds
+# etc...
+#
+# Build/Setup Steps:
+# 1. Select OS of choice through choice parameter (Ubuntu)
+# 2. Select OS Version of choice through choice parameter (Ubuntu)
+# 2. Misc OS options (e.g. x86_64-Minimal-DVD-1, x86_64-Desktop-DVD-1)
+# 3. Choose hypervisor of choice (virtualbox)
+# 4. Env Variable Input (this will effect more so how the options below run incase of custom needs, though this shoudn't be the case majority of the time)
+# 5. Clone repos to get resources needed
+# 6. run packerbuilds-util and set-packer-dirstruct
+#   - know what resources to move and then create the directory structure to run packer in
+# 
+# 7. move resources into new directory, cd into new directory and run packer
+# ???. we want newer builds to replace older builds, not sure how to configure jenkins todo this
+#
+#
+#
+#
+#
+#
+#
