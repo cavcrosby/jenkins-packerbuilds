@@ -2,7 +2,7 @@
 # Main build step should run this script when construting
 # a 'packerbuild'.
 
-PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds"
+PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 
 #######################################
 # Main build script for 'packerbuilds' project
