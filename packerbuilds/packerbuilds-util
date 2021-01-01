@@ -2,7 +2,10 @@
 
 usage () {
 	cat << _EOF_
-Usage: $PROGRAM_NAME 
+Usage: $PROGRAM_NAME [-h] [-o OUTPUT_CONF]
+
+Options:
+	-o	output a packer build configuration based on jenkins env
 
 _EOF_
 }
@@ -73,12 +76,12 @@ for ((i=0; i < count; i++)); do
     declare -r "${name}"="$i"
 done
 
+unset name
 while getopts "ho:" opt; do
 	case "$opt" in
 	# NOTES:
-	# -o is for output
 	# -o helps determine which packer build configuration to output
-	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins
+	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins (at least for project packerbuilds)
 	# specifying -o without an argument will pass in ':' for 'opt'
 	"o")    OUTPUT_CONF=$OPTARG
 			output_conf
@@ -89,9 +92,15 @@ while getopts "ho:" opt; do
 	":")    echo "${PROGRAM_NAME}: an argument is required for -- $OPTARG"
 			exit 1
 			;;
-    *)    ;;
+    *)		exit 1
+			;;
     esac
 done
+
+if [ -z "$name" ]; then
+	usage
+	exit 1
+fi
 
 #
 # exit 0
