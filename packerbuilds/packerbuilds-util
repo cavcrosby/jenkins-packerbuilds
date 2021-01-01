@@ -20,7 +20,7 @@ output_conf () {
 	case "$ISO_FILE" in
 		#"ubuntu-16.04-server-amd64")   ... *specfic --> generic (can be deteremined by some form of pattern matching)*
 		"ubuntu"*)		OS_BUILD_CONF_NAME="preseed.cfg"
-						SHELL_PROVISIONER_NAME="shell-provisioner-apt-get.sh"
+						SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
 						PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
 						PACKER_BUILD_EVALUSERVARS_NAME="ubuntu_preseed_build_evaluservars"
 						OS_CHOICE="$UBUNTU"
