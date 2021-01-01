@@ -1,9 +1,9 @@
 switch (ISO_FILE){
-    case "18.04.2":
+    case "ubuntu-18.04.2-server-amd64.iso":
         return [
             "virtualbox-iso"
 	    ]
-    case "16.04":
+    case "ubuntu-16.04-server-amd64.iso":
         return [
             "virtualbox-iso"         
 	    ]
