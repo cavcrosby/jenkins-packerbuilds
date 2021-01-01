@@ -1,6 +1,6 @@
 #!/bin/bash
 # Main build step should run this script when construting
-# a packer build.
+# a 'packerbuild'.
 
 PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds"
 

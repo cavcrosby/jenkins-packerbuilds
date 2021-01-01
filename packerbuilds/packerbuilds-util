@@ -1,15 +1,41 @@
 #!/bin/bash
 
+#######################################
+# Usage string for the program.
+# Globals:
+#   PROGRAM_NAME
+# Outputs:
+#   - usage heredoc string to stdout
+#######################################
 usage () {
 	cat << _EOF_
 Usage: $PROGRAM_NAME [-h] [-o OUTPUT_CONF]
 
 Options:
-	-o	output a packer build configuration based on jenkins env
+	-o	output a packerbuild configuration based on jenkins env
 
 _EOF_
 }
 
+#######################################
+# Output's a packerbuild configuration. Should
+# note that a packerbuild configuration is of my own construct
+# that separates provisioners, packer build templates,
+# and OS configuration file (e.g. preseed, kickstart file).
+# Globals:
+#	PROGRAM_NAME
+#	OUTPUT_CONF
+#   ISO_FILE
+#   PACKER_BUILDER
+#	UBUNTU
+#	OS_BUILD_CONF_NAME
+#	SHELL_PROVISIONER_NAME
+#	PACKER_BUILD_TEMPLATE_NAME
+#	PACKER_BUILD_EVALUSERVARS_NAME
+# Outputs:
+#   - configuration desired, stdout
+#	- error messages, stdout
+#######################################
 output_conf () {
 	# parameter values expected from jenkins env 
 	if [ -z "$ISO_FILE" ]; then
@@ -63,6 +89,10 @@ output_conf () {
 						;;
 	esac 
 }
+#######################################
+# Not a function at the moment, but can be considered
+# the main of the program.
+#######################################
 set -e
 PROGRAM_NAME="$(basename "$0")"
 # Define enum type.
@@ -80,11 +110,12 @@ unset name
 while getopts "ho:" opt; do
 	case "$opt" in
 	# NOTES:
-	# -o helps determine which packer build configuration to output
+	# -o helps determine which packerbuild configuration to output
 	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins (at least for project packerbuilds)
 	# specifying -o without an argument will pass in ':' for 'opt'
 	"o")    OUTPUT_CONF=$OPTARG
 			output_conf
+			exit 0
 			;;
 	"h")	usage
 			exit 0
