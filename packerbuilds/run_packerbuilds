@@ -10,7 +10,7 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds"
 # Globals:
 #   WORKSPACE                           (pre-defined)
 #   JENKINS_HOME                        (pre-defined)
-#   DEFAULT_BRANCH_FOR_REPOS            TODO
+#   DEFAULT_BRANCH_FOR_REPOS            (from build step)
 #   PACKER_EXE                          (from build step)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
@@ -41,21 +41,21 @@ run_packerbuilds () {
         git pull
         cd ..
     else
-        git clone "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
+        git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
     fi
     if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
         cd "$SHELL_PROVISIONERS_REPO_NAME"
         git pull
         cd ..
     else
-        git clone "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
+        git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
     fi
     if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
         cd "$PACKER_BUILD_TEMPLATES_REPO_NAME"
         git pull
         cd ..
     else
-        git clone "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
+        git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     fi
     
     PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
