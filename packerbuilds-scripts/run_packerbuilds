@@ -22,7 +22,7 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   - ?
 #######################################
 run_packerbuilds () {
-    set -ex
+    # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || exit 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
     PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
@@ -32,26 +32,26 @@ run_packerbuilds () {
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
     PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/reap2sow1/packer-build-templates"
-    OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO")"
-    SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO")"
-    PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATE_REPOS")"
+    OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO_URL")"
+    SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO_URL")"
+    PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
 
     if [ -d "$OS_BUILD_CONFS_REPO_NAME" ]; then
-        cd "$OS_BUILD_CONFS_REPO_NAME"
+        cd "$OS_BUILD_CONFS_REPO_NAME" || exit 1
         git pull
         cd ..
     else
         git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
     fi
     if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
-        cd "$SHELL_PROVISIONERS_REPO_NAME"
+        cd "$SHELL_PROVISIONERS_REPO_NAME" || exit 1
         git pull
         cd ..
     else
         git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
     fi
     if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
-        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME"
+        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME" || exit 1
         git pull
         cd ..
     else
