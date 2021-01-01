@@ -22,7 +22,7 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   - ?
 #######################################
 run_packerbuilds () {
-    set -e
+    set -ex
     cd "$WORKSPACE" || exit 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
     PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
