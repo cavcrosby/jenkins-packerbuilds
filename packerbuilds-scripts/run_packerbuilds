@@ -42,26 +42,17 @@ run_packerbuilds () {
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
 
     if [ -d "$OS_BUILD_CONFS_REPO_NAME" ]; then
-        cd "$OS_BUILD_CONFS_REPO_NAME" || return 1
-        git pull
-        cd ..
-    else
-        git clone --branch "$OS_BUILD_CONFS_BRANCH" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
+        rm --recursive --force "$OS_BUILD_CONFS_REPO_NAME"
     fi
+    git clone --branch "$OS_BUILD_CONFS_BRANCH" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
     if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
-        cd "$SHELL_PROVISIONERS_REPO_NAME" || return 1
-        git pull
-        cd ..
-    else
-        git clone --branch "$SHELL_PROVISIONERS_BRANCH" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
+        rm --recursive --force "$SHELL_PROVISIONERS_REPO_NAME"
     fi
+    git clone --branch "$SHELL_PROVISIONERS_BRANCH" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
     if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
-        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME" || return 1
-        git pull
-        cd ..
-    else
-        git clone --branch "$PACKER_BUILD_TEMPLATES_BRANCH" "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
+        rm --recursive --force "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     fi
+    git clone --branch "$PACKER_BUILD_TEMPLATES_BRANCH" "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     
     PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
     if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
