@@ -69,7 +69,7 @@ run_packerbuilds () {
     OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
     PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL}" -o template)"
     PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL}" -o evaluservars)"       
-    read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "$ISO_FILE")" # output from sha256sum: hash iso_filename
+    read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
     SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
 
     # shellcheck disable=1090
@@ -83,10 +83,12 @@ run_packerbuilds () {
     cd "$PACKER_BUILD_ROOT_PATH" || exit 1
     ./"$PACKER_BUILD_EVALUSERVARS_NAME"
 
-    read -ra ENV_VAR_NAME_ARR -d '' <<< "$RECORD_BUILDENV_VARS"
-    for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
-        echo "$env_var: ${!env_var}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
-    done
+    if [ -n "$RECORD_BUILDENV_VARS" ]; then
+        read -ra ENV_VAR_NAME_ARR -d '' <<< "$RECORD_BUILDENV_VARS"
+        for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
+            echo "$env_var: ${!env_var}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
+        done
+    fi
 
     "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
 }
