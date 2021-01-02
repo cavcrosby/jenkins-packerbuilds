@@ -81,7 +81,9 @@ run_packerbuilds () {
     cp "$PACKERBUILDS_CONF" "$PACKER_HTTP_PATH"
 
     cd "$PACKER_BUILD_ROOT_PATH" || exit 1
-    ./"$PACKER_BUILD_EVALUSERVARS_NAME"
+    # shellcheck disable=1090
+    source "$PACKER_BUILD_EVALUSERVARS_NAME"
+    "$PACKER_BUILD_EVALUSERVARS_NAME"
 
     if [ -n "$RECORD_BUILDENV_VARS" ]; then
         read -ra ENV_VAR_NAME_ARR -d '' <<< "$RECORD_BUILDENV_VARS"
