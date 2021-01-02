@@ -132,31 +132,3 @@ if [ -z "$name" ]; then
 	usage
 	exit 1
 fi
-
-#
-# exit 0
-#
-# Jenkins project names:
-# packer-ubuntu-builds
-# packer-debian-builds
-# etc...
-#
-# Build/Setup Steps:
-# 1. Select OS of choice through choice parameter (Ubuntu)
-# 2. Select OS Version of choice through choice parameter (Ubuntu)
-# 2. Misc OS options (e.g. x86_64-Minimal-DVD-1, x86_64-Desktop-DVD-1)
-# 3. Choose hypervisor of choice (virtualbox)
-# 4. Env Variable Input (this will effect more so how the options below run incase of custom needs, though this shoudn't be the case majority of the time)
-# 5. Clone repos to get resources needed
-# 6. run packerbuilds-util and set-packer-dirstruct
-#   - know what resources to move and then create the directory structure to run packer in
-# 
-# 7. move resources into new directory, cd into new directory and run packer
-# ???. we want newer builds to replace older builds, not sure how to configure jenkins todo this
-#
-#
-#
-#
-#
-#
-#
