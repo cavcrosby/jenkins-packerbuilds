@@ -12,6 +12,7 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   JENKINS_HOME                        (pre-defined)
 #   DEFAULT_BRANCH_FOR_REPOS            (from build step)
 #   PACKER_EXE                          (from build step)
+#   DRY_RUN                             (from build step)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
 #   ISO_FILE                            (from jenkin parameters)
@@ -19,11 +20,13 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
 #   RECORD_BUILDENV_VARS                (from jenkin parameters)
 # Outputs:
-#   - ?
+#   - git commands output to stdout/stderr
+#   - unix command output to stdout/stderr
+#   - packer output to stdout/stderr
 #######################################
 run_packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
-    cd "$WORKSPACE" || exit 1
+    cd "$WORKSPACE" || return 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
     PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
     PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
@@ -37,21 +40,21 @@ run_packerbuilds () {
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
 
     if [ -d "$OS_BUILD_CONFS_REPO_NAME" ]; then
-        cd "$OS_BUILD_CONFS_REPO_NAME" || exit 1
+        cd "$OS_BUILD_CONFS_REPO_NAME" || return 1
         git pull
         cd ..
     else
         git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
     fi
     if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
-        cd "$SHELL_PROVISIONERS_REPO_NAME" || exit 1
+        cd "$SHELL_PROVISIONERS_REPO_NAME" || return 1
         git pull
         cd ..
     else
         git clone --branch "$DEFAULT_BRANCH_FOR_REPOS" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
     fi
     if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
-        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME" || exit 1
+        cd "$PACKER_BUILD_TEMPLATES_REPO_NAME" || return 1
         git pull
         cd ..
     else
@@ -80,7 +83,7 @@ run_packerbuilds () {
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "$PACKERBUILDS_CONF" "$PACKER_HTTP_PATH"
 
-    cd "$PACKER_BUILD_ROOT_PATH" || exit 1
+    cd "$PACKER_BUILD_ROOT_PATH" || return 1
     # shellcheck disable=1090
     source "$PACKER_BUILD_EVALUSERVARS_NAME"
     "$PACKER_BUILD_EVALUSERVARS_NAME"
@@ -92,5 +95,8 @@ run_packerbuilds () {
         done
     fi
 
-    "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
+    if [ -z "$DRY_RUN" ]; then
+        "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
+    fi
+    return 0
 }
