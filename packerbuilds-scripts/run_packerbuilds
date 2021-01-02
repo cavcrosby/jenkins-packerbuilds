@@ -14,13 +14,13 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   SHELL_PROVISIONERS_BRANCH           (from build step)
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from build step)
 #   PACKER_EXE                          (from build step)
-#   DRY_RUN                             (from build step)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
 #   ISO_FILE                            (from jenkin parameters)
 #   PACKER_BUILDER                      (from jenkin parameters)
 #   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
 #   RECORD_BUILDENV_VARS                (from jenkin parameters)
+#   DRY_RUN                             (from jenkin parameters)
 # Outputs:
 #   - git commands output to stdout/stderr
 #   - unix command output to stdout/stderr
