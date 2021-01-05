@@ -54,7 +54,9 @@ run_packerbuilds () {
     fi
     git clone --branch "$PACKER_BUILD_TEMPLATES_BRANCH" "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     
-    PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-${OPERATING_SYSTEM_VERSION}
+    # NOTE: some OS versions contain the dot character in them (usually more than one)
+    # to be used as the default hostname for the vm, those will need to be replaced
+    PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
     if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
         PACKERBUILD_NAME="${PACKERBUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
     fi
