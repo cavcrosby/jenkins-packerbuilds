@@ -89,6 +89,7 @@ output_conf () {
 						;;
 	esac 
 }
+
 #######################################
 # Not a function at the moment, but can be considered
 # the main of the program.

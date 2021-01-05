@@ -2,8 +2,6 @@
 # Main build step should run this script when construting
 # a 'packerbuild'.
 
-PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
-
 #######################################
 # Main build script for 'packerbuilds' project
 # that is hosted on a jenkins instance.
@@ -14,6 +12,9 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   SHELL_PROVISIONERS_BRANCH           (from build step)
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from build step)
 #   PACKER_EXE                          (from build step)
+#   PROJECT_SCRIPTS_DIRECTORY           (from .env)
+#   PACKER_HTTP_DIR_NAME                (from .env)
+#   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
 #   ISO_FILE                            (from jenkin parameters)
@@ -26,13 +27,12 @@ PROJECT_SCRIPTS_DIRECTORY="${WORKSPACE}/packerbuilds-scripts"
 #   - unix command output to stdout/stderr
 #   - packer output to stdout/stderr
 #######################################
-run_packerbuilds () {
+packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
     PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
     PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
-    SETUP_PACKER_DIRSTRUCT="${PROJECT_SCRIPTS_DIRECTORY}/setup-packer-dirstruct"
 
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
@@ -70,8 +70,12 @@ run_packerbuilds () {
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
     SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
 
-    # shellcheck disable=1090
-    source "$SETUP_PACKER_DIRSTRUCT"
+    PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
+    PACKER_SHELL_PROVISIONER_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
+    PACKER_BUILD_ROOT_PATH="${WORKSPACE}/${PACKERBUILD_NAME}"
+    mkdir -p "$PACKER_HTTP_PATH"
+    mkdir -p "$PACKER_SHELL_PROVISIONER_PATH"
+
     cp "${WORKSPACE}/${OS_BUILD_CONFS_REPO_NAME}/${OS_BUILD_CONF_NAME}" "$PACKER_HTTP_PATH"
     cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
