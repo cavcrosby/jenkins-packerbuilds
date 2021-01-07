@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# Small installer script for Debian Buster. Meant to install 
+# a few things so I don't have to remember all configurations
+# for the system this project runs on.
+#######################################
+# Pre-Running-Script:
+#   Make sure apt is not configured 
+#   to see installer iso as a deb repo.
+# Post-Running-Script:
+#   Invalidate root account, use 
+#   'sudo passwd -l root'.
+#######################################
+# running as root, install severl pkgs and assign reap2sow1 to sudo group
+apt-get install sudo openjdk-11-jdk jq gpg --assume-yes
+usermod --append --groups sudo reap2sow1
+
+# install jenkins from stable release
+wget --quiet --output-document - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+echo "deb https://pkg.jenkins.io/debian-stable binary/" > "/etc/apt/sources.list.d/jenkins.list"
+apt-get update
+apt-get install jenkins --assume-yes
+
+# starts jenkins
+systemctl start jenkins --assume-yes
+
+# install few aliases
+cat << _EOF_ > /home/reap2sow1/.bash_aliases
+    alias reboot="systemctl reboot"
+    alias shutdown="systemctl poweroff"
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias grep='grep --color=auto'
+    alias l='ls -CF'
+    alias la='ls -A'
+    alias ll='ls -alF'
+    alias ls='ls --color=auto'
+_EOF_
