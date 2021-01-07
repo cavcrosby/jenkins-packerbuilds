@@ -34,8 +34,6 @@ systemctl start jenkins --assume-yes
 
 # install few aliases
 cat << _EOF_ > /home/reap2sow1/.bash_aliases
-    alias reboot="systemctl reboot"
-    alias shutdown="systemctl poweroff"
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias grep='grep --color=auto'
