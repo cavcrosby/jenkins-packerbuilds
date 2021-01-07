@@ -11,6 +11,14 @@
 #   Invalidate root account, use 
 #   'sudo passwd -l root'.
 #######################################
+PROGRAM_NAME="$(basename "$0")"
+
+# check to see if I am root
+ROOT_ID=0
+if [ "$(id -u)" != "$ROOT_ID" ]; then
+    echo "${PROGRAM_NAME}: must be root to run script!"
+fi
+
 # running as root, install severl pkgs and assign reap2sow1 to sudo group
 apt-get install sudo openjdk-11-jdk jq gpg --assume-yes
 usermod --append --groups sudo reap2sow1
