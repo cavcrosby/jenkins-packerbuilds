@@ -30,7 +30,7 @@ apt-get update
 apt-get install jenkins --assume-yes
 
 # starts jenkins
-systemctl start jenkins --assume-yes
+systemctl start jenkins
 
 # install few aliases
 cat << _EOF_ > /home/reap2sow1/.bash_aliases
