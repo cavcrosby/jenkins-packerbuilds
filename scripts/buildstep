@@ -1,5 +1,5 @@
-GIT_CONFIG="${WORKSPACE}/.git/config"
-git config --local credential.username "$JENKINS_GIT_CREDENTIAL_USERNAME"
+git config --global credential.helper "cache --timeout=30"
+git config --global credential.username "$JENKINS_GIT_CREDENTIAL_USERNAME"
 DEFAULT_BRANCH_FOR_REPOS=""
 OS_BUILD_CONFS_BRANCH="$DEFAULT_BRANCH_FOR_REPOS"
 SHELL_PROVISIONERS_BRANCH="$DEFAULT_BRANCH_FOR_REPOS"
