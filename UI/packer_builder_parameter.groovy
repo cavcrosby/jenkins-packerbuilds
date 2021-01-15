@@ -3,7 +3,11 @@ switch (ISO_FILE){
         return [
             "virtualbox-iso"
 	    ]
-    case "ubuntu-16.04-server-amd64.iso":
+    case "ubuntu-20.04.1-legacy-server-amd64.iso":
+        return [
+            "virtualbox-iso"
+	    ]
+    case "debian-10.7.0-amd64-DVD-1.iso":
         return [
             "virtualbox-iso"         
 	    ]

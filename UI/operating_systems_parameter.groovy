@@ -1,3 +1,4 @@
 return [
-    "ubuntu:selected"
+    "ubuntu:selected",
+    "debian"
 ]

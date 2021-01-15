@@ -3,8 +3,12 @@ switch (OPERATING_SYSTEM_VERSION){
         return [
             "ubuntu-18.04.2-server-amd64.iso"
 	    ]
-    case "16.04":
+    case "20.04.1":
         return [
-            "ubuntu-16.04-server-amd64.iso"         
+            "ubuntu-20.04.1-legacy-server-amd64.iso"         
 	    ]
+    case "10.7.0":
+        return [
+            "debian-10.7.0-amd64-DVD-1.iso"
+    ]
 }
