@@ -29,10 +29,6 @@ _EOF_
 #   PACKER_BUILDER
 #	UBUNTU
 #	DEBIAN
-#	OS_BUILD_CONF_NAME
-#	SHELL_PROVISIONER_NAME
-#	PACKER_BUILD_TEMPLATE_NAME
-#	PACKER_BUILD_EVALUSERVARS_NAME
 # Outputs:
 #   - configuration desired, stdout
 #	- error messages, stdout
