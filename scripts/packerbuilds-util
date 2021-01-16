@@ -56,7 +56,7 @@ output_conf () {
 															OS_CHOICE="$UBUNTU"
 															;;
 		# ubuntu versions 19.xx and below
-		"ubuntu-"[1][1-9]"."*|"ubuntu-"[1-9]"."*)			OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
+		"ubuntu-"?([1])[1-9]"."*)							OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
 															SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
 															PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
 															PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
