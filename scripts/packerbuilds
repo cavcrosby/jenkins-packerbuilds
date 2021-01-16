@@ -22,6 +22,10 @@
 #   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
 #   RECORD_BUILDENV_VARS                (from jenkin parameters)
 #   DRY_RUN                             (from jenkin parameters)
+#   OS_BUILD_CONF_NAME                  (from jenkin parameters/this script)
+#   PACKER_BUILD_TEMPLATE_NAME          (from jenkin parameters/this script)
+#   PACKER_BUILD_EVALUSERVARS_NAME      (from jenkin parameters/this script)
+#   SHELL_PROVISIONER_NAME              (from jenkin parameters/this script)
 # Outputs:
 #   - git commands output to stdout/stderr
 #   - unix command output to stdout/stderr
@@ -64,11 +68,19 @@ packerbuilds () {
         rm --recursive --force "$PACKERBUILD_NAME"
     fi
     GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL}" -o guest_os_type)"
-    OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
-    PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL}" -o template)"
-    PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL}" -o evaluservars)"       
+    if [ -z "$OS_BUILD_CONF_NAME" ]; then
+        OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
+    fi
+    if [ -z "$PACKER_BUILD_TEMPLATE_NAME" ]; then
+        PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL}" -o template)"
+    fi
+    if [ -z "$PACKER_BUILD_EVALUSERVARS_NAME" ]; then
+        PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL}" -o evaluservars)"
+    fi
+    if [ -z "$SHELL_PROVISIONER_NAME" ]; then
+        SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
+    fi
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
-    SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
 
     PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
     PACKER_SHELL_PROVISIONER_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
