@@ -47,31 +47,36 @@ output_conf () {
 		exit 1
 	fi
 
-	case "$ISO_FILE" in
-		#"ubuntu-16.04-server-amd64")   ... *specfic --> generic (can be deteremined by some form of pattern matching)*
-		"ubuntu-20.04.1-legacy-server-amd64.iso")			OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
-															SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
-															PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
-															PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
-															OS_CHOICE="$UBUNTU"
-															;;
+	#"ubuntu-16.04-server-amd64")   ... *specfic --> generic (can be deteremined by some form of pattern matching)*
+	declare -A ISO_REGEXES=(
+		["UBUNTU_FOCAL_PRESEED"]="ubuntu-20.04.1-legacy-server-amd64.iso"
+		["UBUNTU_EOAM_AND_BELOW"]="ubuntu-1?[0-9]\..+"
+		["DEBIAN"]="debian-.*"
+	)
+
+	if [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["UBUNTU_FOCAL_PRESEED"]}" -c)" -eq 1 ]; then
+		OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
+		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
+		PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
+		PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
+		OS_CHOICE="$UBUNTU"
+	elif [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["UBUNTU_EOAM_AND_BELOW"]}" -c)" -eq 1 ]; then
 		# ubuntu versions 19.xx and below
-		"ubuntu-"?([1])[1-9]"."*)							OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
-															SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
-															PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
-															PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
-															OS_CHOICE="$UBUNTU"
-															;;
-		"debian"*)											OS_BUILD_CONF_NAME="debian_preseed.cfg"
-															SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
-															PACKER_BUILD_TEMPLATE_NAME="debian_preseed_build.json"
-															PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
-															OS_CHOICE="$DEBIAN"
-															;;
-		*)         											echo "${PROGRAM_NAME}: build configurations not set for $ISO_FILE"
-															exit 1
-															;;
-	esac
+		OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
+		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
+		PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
+		PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
+		OS_CHOICE="$UBUNTU"
+	elif [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["DEBIAN"]}" -c)" -eq 1 ]; then
+		OS_BUILD_CONF_NAME="debian_preseed.cfg"
+		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
+		PACKER_BUILD_TEMPLATE_NAME="debian_preseed_build.json"
+		PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
+		OS_CHOICE="$DEBIAN"
+	else
+		echo "${PROGRAM_NAME}: build configurations not set for $ISO_FILE"
+		exit 1
+	fi
 
 	case "$PACKER_BUILDER" in
 		"virtualbox-iso")	case "$OS_CHOICE" in
