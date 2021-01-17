@@ -17,6 +17,7 @@ PROGRAM_NAME="$(basename "$0")"
 ROOT_ID=0
 if [ "$(id -u)" != "$ROOT_ID" ]; then
     echo "${PROGRAM_NAME}: must be root to run script!"
+    exit 1
 fi
 
 # running as root, install several pkgs and assign reap2sow1 to sudo group
