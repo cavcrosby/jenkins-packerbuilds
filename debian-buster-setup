@@ -20,7 +20,7 @@ if [ "$(id -u)" != "$ROOT_ID" ]; then
 fi
 
 # running as root, install several pkgs and assign reap2sow1 to sudo group
-apt-get install sudo openjdk-11-jdk jq gpg git zip wget --assume-yes
+apt-get install sudo openjdk-11-jdk jq gpg git rsync zip wget --assume-yes
 usermod --append --groups sudo reap2sow1
 
 # install kernel header for current kernel

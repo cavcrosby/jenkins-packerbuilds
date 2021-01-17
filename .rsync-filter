@@ -1,0 +1,11 @@
+- iso_images
+- workspace
+- builds
+- nextBuildNumber
+- userContent
+- updates
+- .bash_history
+- .gitconfig
+- VirtualBox VMs
+- .ssh
+EOF
