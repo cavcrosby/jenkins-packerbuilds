@@ -25,13 +25,13 @@ apt-get install sudo openjdk-11-jdk jq gpg git rsync zip wget --assume-yes
 usermod --append --groups sudo reap2sow1
 
 # install kernel header for current kernel
-apt-get install linux-headers-"$(uname -r)"
+apt-get install linux-headers-"$(uname -r)" --assume-yes
 
 # install virtualbox
 VBOX_DEB_PKG_URL="https://download.virtualbox.org/virtualbox/6.0.24/virtualbox-6.0_6.0.24-139119~Debian~buster_amd64.deb"
 VBOX_DEB_PKGNAME="$(basename $VBOX_DEB_PKG_URL)"
 wget --quiet --output-document "$VBOX_DEB_PKGNAME" "$VBOX_DEB_PKG_URL"
-apt-get install "./${VBOX_DEB_PKGNAME}"
+apt-get install "./${VBOX_DEB_PKGNAME}" --assume-yes
 
 # install jenkins from stable release
 wget --quiet --output-document - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
