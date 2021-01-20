@@ -11,6 +11,7 @@
 #   Invalidate root account, use 
 #   'sudo passwd -l root'.
 #######################################
+set -e
 PROGRAM_NAME="$(basename "$0")"
 
 # check to see if I am root
@@ -24,7 +25,7 @@ fi
 apt-get install sudo openjdk-11-jdk jq gpg git rsync zip wget --assume-yes
 usermod --append --groups sudo reap2sow1
 
-# install kernel header for current kernel
+# install kernel headers for current kernel
 apt-get install linux-headers-"$(uname -r)" --assume-yes
 
 # install virtualbox
