@@ -53,3 +53,5 @@ cat << _EOF_ > /home/reap2sow1/.bash_aliases
     alias ll='ls -alF'
     alias ls='ls --color=auto'
 _EOF_
+
+exit 0
