@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Small script to prepare seed job to create the 
+# packerbuilds job on a jenkins instance.
+set -e
+PROGRAM_NAME="$(basename "$0")"
+USERNAME="jenkins"
+JENKINS_HOME="/var/lib/jenkins/"
+SEED_WORKSPACE="${JENKINS_HOME}/workspace/seed/"
+
+# check to see if I am root
+ROOT_ID=0
+if [ "$(id -u)" != "$ROOT_ID" ]; then
+    echo "${PROGRAM_NAME}: must be root to run script!"
+    exit 1
+fi
+
+if [ -z "$(which rsync)" ]; then
+    echo "${PROGRAM_NAME}: rsync cannot be found on the PATH!"
+    exit 1
+fi
+
+# shellcheck disable=2140
+rsync --chown="jenkins":"jenkins" --archive --quiet "scripts" "$SEED_WORKSPACE"
+# shellcheck disable=2140
+rsync --chown="jenkins":"jenkins" --archive --quiet "UI" "$SEED_WORKSPACE"
+
+exit 0
