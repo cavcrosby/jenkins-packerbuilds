@@ -36,7 +36,7 @@ packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
-    PACKERBUILDS_CONF="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuild.conf"
+    PACKERBUILDS_CONF="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuilds.conf"
     PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
 
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"

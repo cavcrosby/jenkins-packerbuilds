@@ -17,6 +17,11 @@ freeStyleJob ('packerbuilds') {
     // so for now it's best todo them one at a time.
     concurrentBuild(false) 
 
+    logRotator {
+        numToKeep(10)
+        artifactNumToKeep(10)
+    }
+
     // Allows to parameterize the job. 
     parameters {
         // Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy script or a script from the Scriptler catalog. 
@@ -108,6 +113,14 @@ freeStyleJob ('packerbuilds') {
     publishers {
         // Archives artifacts with each build. 
         archiveArtifacts('*/output/*')
+    }
+
+    // Adds pre/post actions to the job. 
+    wrappers {
+        // defines an absolute timeout with a maximum build time of one hour and thirty minutes
+        timeout {
+            absolute(90)
+        }
     }
 
 }
