@@ -10,6 +10,8 @@ freeStyleJob ('packerbuilds') {
     #   Username Variable/Password Variable Respectfully:
     #   JENKINS_GIT_CREDENTIAL_USERNAME 
     #   JENKINS_GIT_CREDENTIAL_PASSWORD
+    #
+    #   An SMTP server to connect to will also need to be setup manually.
     */
 
     // Allows Jenkins to schedule and execute multiple builds concurrently.
@@ -104,6 +106,14 @@ freeStyleJob ('packerbuilds') {
         }
     }
 
+    // Adds pre/post actions to the job. 
+    wrappers {
+        // defines an absolute timeout with a maximum build time of one hour and thirty minutes
+        timeout {
+            absolute(90)
+        }
+    }
+
     steps {
         // Runs a shell script. 
         shell(readFileFromWorkspace('./jobconfs/buildstep'))
@@ -113,13 +123,13 @@ freeStyleJob ('packerbuilds') {
     publishers {
         // Archives artifacts with each build. 
         archiveArtifacts('*/output/*')
-    }
 
-    // Adds pre/post actions to the job. 
-    wrappers {
-        // defines an absolute timeout with a maximum build time of one hour and thirty minutes
-        timeout {
-            absolute(90)
+        // If configured, Jenkins will send out an e-mail to the specified recipients when a certain important event occurs. 
+        mailer {
+            recipients('conner@conneracrosby.tech')
+            notifyEveryUnstableBuild(true)
+            // If this option is checked, the notification e-mail will be sent to individuals who have committed changes for the broken build (by assuming that those changes broke the build).
+            sendToIndividuals(false) 
         }
     }
 
