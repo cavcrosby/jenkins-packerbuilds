@@ -13,6 +13,7 @@
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from build step)
 #   PACKER_EXE                          (from build step)
 #   PROJECT_SCRIPTS_DIRECTORY           (from .env)
+#   PROJECT_BUILDCONFS_DIRECTORY        (from .env)
 #   PACKER_HTTP_DIR_NAME                (from .env)
 #   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
@@ -35,7 +36,7 @@ packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
-    PACKERBUILDS_CONF="${PROJECT_SCRIPTS_DIRECTORY}/packerbuild.conf"
+    PACKERBUILDS_CONF="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuild.conf"
     PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
 
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"

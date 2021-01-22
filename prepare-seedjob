@@ -4,7 +4,9 @@
 # packerbuilds job on a jenkins instance.
 set -e
 PROGRAM_NAME="$(basename "$0")"
-USERNAME="jenkins"
+# NOTE: this is the system user that jenkins runs under,
+# at least in terms of the filesystem and respective files
+JENKINS_SYSTEM_USERNAME="jenkins"
 JENKINS_HOME="/var/lib/jenkins/"
 SEED_WORKSPACE="${JENKINS_HOME}/workspace/seed/"
 
@@ -21,8 +23,6 @@ if [ -z "$(which rsync)" ]; then
 fi
 
 # shellcheck disable=2140
-rsync --chown="jenkins":"jenkins" --archive --quiet "scripts" "$SEED_WORKSPACE"
-# shellcheck disable=2140
-rsync --chown="jenkins":"jenkins" --archive --quiet "UI" "$SEED_WORKSPACE"
+rsync --chown="$JENKINS_SYSTEM_USERNAME":"$JENKINS_SYSTEM_USERNAME" --archive --quiet "jobconfs" "$SEED_WORKSPACE"
 
 exit 0

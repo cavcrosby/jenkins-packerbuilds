@@ -19,22 +19,20 @@ freeStyleJob ('packerbuilds') {
 
     // Allows to parameterize the job. 
     parameters {
-
         // Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy script or a script from the Scriptler catalog. 
         activeChoiceParam('OPERATING_SYSTEM') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./UI/operating_systems_parameter.groovy'))
+                script(readFileFromWorkspace('./jobconfs/operating_systems_parameter.groovy'))
                 fallbackScript('')
             }
         }
 
-
         /* 
             Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog and that dynamically updates when the value of other job UI
+            script or a script from the Scriptler catalog and that dynamically updates when the value of other job jobconfs
             controls change. 
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM_VERSION') {
@@ -42,7 +40,7 @@ freeStyleJob ('packerbuilds') {
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./UI/operating_system_versions_parameter.groovy'))
+                script(readFileFromWorkspace('./jobconfs/operating_system_versions_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('OPERATING_SYSTEM')
@@ -53,7 +51,7 @@ freeStyleJob ('packerbuilds') {
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./UI/iso_files_parameter.groovy'))
+                script(readFileFromWorkspace('./jobconfs/iso_files_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('OPERATING_SYSTEM_VERSION')
@@ -64,7 +62,7 @@ freeStyleJob ('packerbuilds') {
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./UI/packer_builder_parameter.groovy'))
+                script(readFileFromWorkspace('./jobconfs/packer_builder_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('ISO_FILE')
@@ -82,35 +80,34 @@ freeStyleJob ('packerbuilds') {
 
     // Allows a job to check out sources from an SCM provider. 
     scm {
-        github('https://github.com/reap2sow1/jenkins-packerbuilds')
+        git {
+            remote {
+                url('https://github.com/reap2sow1/jenkins-packerbuilds')
+            }
+            branch('main')
+        }
     }
 
     // Adds build triggers to the job.
     triggers {
-
         // Adds support for passing parameters to parameterized builds on top of the default scheduler. 
         parameterizedCron {
 
             // follow convention of cron, schedule with name=value pairs at the end of each line. 
-            parameterizedSpecification(readFileFromWorkspace('./scripts/parameterizedcrons'))
+            parameterizedSpecification(readFileFromWorkspace('./jobconfs/parameterizedcrons'))
 
         }
-
     }
 
     steps {
-
         // Runs a shell script. 
-        shell(readFileFromWorkspace('./scripts/buildstep'))
-
+        shell(readFileFromWorkspace('./jobconfs/buildstep'))
     }
 
     // Adds post-build actions to the job.
     publishers {
-
         // Archives artifacts with each build. 
         archiveArtifacts('*/output/*')
-
     }
 
 }
