@@ -39,15 +39,13 @@ chmod 755 prepare-seedjob
 ```
 From there, in your Jenkins instance, proceed to create a new seed job. The only job configuration needed for this new seed job is a new build step. When adding the new build step, click on the option _**Process Job DSLs**_.
 
-TODO
-(picture here)
+![image](https://user-images.githubusercontent.com/31086993/105564206-2acdc680-5cef-11eb-9523-26f1f645cc0a.png)
 
 Then select the radio button named, "Use the provided DSL script", and paste in the entire contents of packerbuilds-job-dsl.groovy from the jenkins-packerbuilds repo. Finish by saving this configuration and running a build on the seed/phony job. This should generate the newly 'packerbuilds' job/project.
 
-TODO
-(picture here)
+![image](https://user-images.githubusercontent.com/31086993/105564218-33be9800-5cef-11eb-9e6a-fadb8266e714.png)
 
-From there, there will be some additional setting up (again, assuming you intend on using this implementation):
+From there, there will be some additional setting up (again, assuming you intend on using this current implementation):
 - Installing **HashiCorp**'s packer, and configuring the sole build step to have the packer executable's path (PACKER_EXE).
   - the sole build step at the moment might have missing values needed in some of its env variables.
 - Installing Oracle's VirtualBox.
