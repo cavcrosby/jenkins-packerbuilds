@@ -61,12 +61,12 @@ packerbuilds () {
     
     # NOTE: some OS versions contain the dot character in them (usually more than one)
     # to be used as the default hostname for the vm, those will need to be replaced
-    PACKERBUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
+    PACKERBUILDS_BUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
     if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
-        PACKERBUILD_NAME="${PACKERBUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
+        PACKERBUILDS_BUILD_NAME="${PACKERBUILDS_BUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
     fi
-    if [ -d "$PACKERBUILD_NAME" ]; then
-        rm --recursive --force "$PACKERBUILD_NAME"
+    if [ -d "$PACKERBUILDS_BUILD_NAME" ]; then
+        rm --recursive --force "$PACKERBUILDS_BUILD_NAME"
     fi
     GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL_PATH}" -o guest_os_type)"
     if [ -z "$OS_BUILD_CONF_NAME" ]; then
@@ -83,9 +83,9 @@ packerbuilds () {
     fi
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
 
-    PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
-    PACKER_SHELL_PROVISIONER_PATH="${WORKSPACE}/${PACKERBUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
-    PACKER_BUILD_ROOT_PATH="${WORKSPACE}/${PACKERBUILD_NAME}"
+    PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
+    PACKER_SHELL_PROVISIONER_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
+    PACKER_BUILD_ROOT_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}"
     mkdir --parents "$PACKER_HTTP_PATH"
     mkdir --parents "$PACKER_SHELL_PROVISIONER_PATH"
 
