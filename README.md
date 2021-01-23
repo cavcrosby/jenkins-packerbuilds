@@ -16,6 +16,7 @@ Same recommendation as above, if you intend to use the job as currently implemen
   - https://en.wikipedia.org/wiki/Preseed
 - https://github.com/reap2sow1/packer-build-templates
   - Holds packer build templates.
+  - Contains a script(s) used to evaluate placeholders in these templates.
   - https://www.packer.io/docs/templates
 - https://github.com/reap2sow1/packer-build-shell-provisioners
   - Holds shell scripts that packer uses as a provisioner.
