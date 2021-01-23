@@ -36,8 +36,8 @@ packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
     ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
-    PACKERBUILDS_CONF="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuilds.conf"
-    PACKERBUILDS_UTIL="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
+    PACKERBUILDS_CONF_PATH="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuilds.conf"
+    PACKERBUILDS_UTIL_PATH="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
 
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
@@ -68,18 +68,18 @@ packerbuilds () {
     if [ -d "$PACKERBUILD_NAME" ]; then
         rm --recursive --force "$PACKERBUILD_NAME"
     fi
-    GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL}" -o guest_os_type)"
+    GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL_PATH}" -o guest_os_type)"
     if [ -z "$OS_BUILD_CONF_NAME" ]; then
-        OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL}" -o osconf)"
+        OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o osconf)"
     fi
     if [ -z "$PACKER_BUILD_TEMPLATE_NAME" ]; then
-        PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL}" -o template)"
+        PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o template)"
     fi
     if [ -z "$PACKER_BUILD_EVALUSERVARS_NAME" ]; then
-        PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL}" -o evaluservars)"
+        PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o evaluservars)"
     fi
     if [ -z "$SHELL_PROVISIONER_NAME" ]; then
-        SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL}" -o provisioner)"
+        SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o provisioner)"
     fi
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
 
@@ -93,7 +93,7 @@ packerbuilds () {
     cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
-    cp "$PACKERBUILDS_CONF" "$PACKER_HTTP_PATH"
+    cp "$PACKERBUILDS_CONF_PATH" "$PACKER_HTTP_PATH"
 
     cd "$PACKER_BUILD_ROOT_PATH" || return 1
     # shellcheck disable=1090
@@ -101,9 +101,9 @@ packerbuilds () {
     "$PACKER_BUILD_EVALUSERVARS_NAME"
 
     if [ -n "$RECORD_BUILDENV_VARS" ]; then
-        read -ra ENV_VAR_NAME_ARR -d '' <<< "$RECORD_BUILDENV_VARS"
+        read -r -a ENV_VAR_NAME_ARR <<< "$RECORD_BUILDENV_VARS"
         for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
-            echo "$env_var: ${!env_var}" >> "${PACKER_HTTP_PATH}/${OS_BUILD_CONF_NAME}"
+            echo "$env_var: ${!env_var}" >> "${PACKER_HTTP_PATH}/$(basename "${PACKERBUILDS_CONF_PATH}")"
         done
     fi
 
