@@ -1,6 +1,6 @@
 # jenkins-packerbuilds
 
-This repo serves the main repo for a Jenkins job/project called 'packerbuilds'. 'packerbuilds' is a Jenkins job/project attempting to regularly build VM images for me to use as a testing ground. At least, this is the only current intention of this project.
+This repo serves the main repo for a Jenkins job/project called 'packerbuilds'. 'packerbuilds' is a freestyle Jenkins job/project attempting to regularly build VM images for me to use as a testing ground. At least, this is the current intention of this project.
 
 The actual building of VMs is done using **HashiCorp**'s [packer](https://github.com/hashicorp/packer).
 
@@ -39,7 +39,7 @@ cd jenkins-packerbuilds
 chmod 755 prepare-seedjob
 ./prepare-seedjob
 ```
-From there, in your Jenkins instance, proceed to create a new seed job (note, this is just a normal jenkins job but its purpose to just to create/generate another job). The only job configuration needed for this new seed job is a new build step. When adding the new build step, click on the option _**Process Job DSLs**_.
+From there, in your Jenkins instance, proceed to create a new seed job (note, this is just a normal Jenkins job but its purpose to just to create/generate another job). The only job configuration needed for this new seed job is a new build step. When adding the new build step, click on the option _**Process Job DSLs**_.
 
 ![image](https://user-images.githubusercontent.com/31086993/105564206-2acdc680-5cef-11eb-9523-26f1f645cc0a.png)
 
