@@ -27,6 +27,7 @@ This installation guide assumes that a normal Jenkins instance has already been 
 
 - [Active Choices Plug-in](https://plugins.jenkins.io/uno-choice/) 
 - [Job DSL](https://plugins.jenkins.io/job-dsl/)
+- [Parameterized-Scheduler](https://plugins.jenkins.io/parameterized-scheduler/)
 
 You may need to swap out the jenkins-packerbuilds url if you choose todo a fork. Further below I will note where Jenkins configuration differences may be worth looking into and reconfiguring.
 
@@ -49,7 +50,13 @@ From there, there will be some additional setting up (again, assuming you intend
 - Installing **HashiCorp**'s packer, and configuring the sole build step to have the packer executable's path (PACKER_EXE).
   - the sole build step at the moment might have missing values needed in some of its env variables.
 - Installing Oracle's VirtualBox.
+- Jenkins 'Credentials' will need to be setup, though they may not get used by a build as it was just when this repo was private. These "Credentials" need to be used in the 'Bindings' section.
+- An SMTP server to connect to will also need to be setup, as the job does mail a recipient(s) incase a build fails.
+
 
 ## Installation Notes
 
-TODO write out possible common jenkins configuration differences
+- prepare-seedjob assumes that the JENKINS_HOME is set to /var/lib/jenkins/, if this is not the case, then you will want to reconfigure the prepare-seedjob script with the appropriate JENKINS_HOME.
+
+- Using forked repos will require changes to the main 'packerbuilds' script in the scripts folder. Look for the vars: OS_BUILD_CONFS_REPO_URL, SHELL_PROVISIONERS_REPO_URL, and PACKER_BUILD_TEMPLATES_REPO_URL.
+
