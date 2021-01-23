@@ -12,14 +12,14 @@ usage () {
 Usage: $PROGRAM_NAME [-h] [-o OUTPUT_CONF]
 
 Options:
-	-o	output a packerbuild configuration based on jenkins env
+	-o	output a packerbuilds configuration based on jenkins env
 
 _EOF_
 }
 
 #######################################
-# Output's a packerbuild configuration. Should
-# note that a packerbuild configuration is of my own construct
+# Output's a packerbuilds configuration. Should
+# note that a packerbuilds configuration is of my own construct
 # that separates provisioners, packer build templates,
 # and OS configuration file (e.g. preseed, kickstart file).
 # Globals:
@@ -129,7 +129,7 @@ unset name
 while getopts "ho:" opt; do
 	case "$opt" in
 	# NOTES:
-	# -o helps determine which packerbuild configuration to output
+	# -o helps determine which packerbuilds configuration to output
 	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins (at least for project packerbuilds)
 	# specifying -o without an argument will pass in ':' for 'opt'
 	"o")    OUTPUT_CONF=$OPTARG

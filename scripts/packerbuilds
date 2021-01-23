@@ -1,6 +1,6 @@
 #!/bin/bash
-# Main build step should run this script when construting
-# a 'packerbuild'.
+# Main build step should run this script when constructing
+# a 'packerbuilds' build.
 
 #######################################
 # Main build script for 'packerbuilds' project

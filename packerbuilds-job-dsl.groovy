@@ -76,8 +76,8 @@ freeStyleJob ('packerbuilds') {
         }
 
         // Defines a simple text parameter, where users can enter a string value. 
-        stringParam('OTHER_PACKERBUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. ${buildname}-${OTHER_PACKERBUILD_NAME_CRITERIA}). Useful for making a special packerbuild.')
-        stringParam('RECORD_BUILDENV_VARS', '', '''Currently this should be a space separated character string (e.g. "FOO BAR FOOBAR") used to record env var names and values into the 'packerbuild.conf' file.''')
+        stringParam('OTHER_PACKERBUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. ${buildname}-${OTHER_PACKERBUILD_NAME_CRITERIA}). Useful for making a special packerbuilds.')
+        stringParam('RECORD_BUILDENV_VARS', '', '''Currently this should be a space separated character string (e.g. "FOO BAR FOOBAR") used to record env var names and values into the 'packerbuilds.conf' file.''')
         stringParam('DRY_RUN', '', '''Same as performing a normal build except the packer executable does not actually run. Useful to do a manually build on the generated template from the build directory. Any input for this field will cause  'dry run'.''')
         stringParam('OS_BUILD_CONF_NAME', '', '')
         stringParam('SHELL_PROVISIONER_NAME', '', '')
