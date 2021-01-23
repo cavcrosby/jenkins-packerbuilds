@@ -32,7 +32,7 @@ This installation guide assumes that a normal Jenkins instance has already been 
 
 You may need to swap out the jenkins-packerbuilds url if you choose todo a fork. Further below I will note where Jenkins configuration differences may be worth looking into and reconfiguring.
 
-On the server that is running jenkins, in a shell, run the following:
+On the server that is running Jenkins, in a shell, run the following:
 ```shell
 git clone https://github.com/reap2sow1/jenkins-packerbuilds
 cd jenkins-packerbuilds
