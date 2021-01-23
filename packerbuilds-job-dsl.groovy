@@ -108,6 +108,18 @@ freeStyleJob ('packerbuilds') {
 
     // Adds pre/post actions to the job. 
     wrappers {
+        // Binds environment variables to credentials.
+        credentialsBinding {
+            usernamePassword {
+                // Name of an environment variable to be set to the username during the build.
+                usernameVariable("JENKINS_GIT_CREDENTIAL_USERNAME ")
+                // Name of an environment variable to be set to the password during the build.
+                passwordVariable("JENKINS_GIT_CREDENTIAL_PASSWORD")
+                // Credentials of an appropriate type to be set to the variable.
+                credentialsId('')
+            }
+        }
+
         // defines an absolute timeout with a maximum build time of one hour and thirty minutes
         timeout {
             absolute(90)
