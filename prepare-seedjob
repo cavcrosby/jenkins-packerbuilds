@@ -2,6 +2,7 @@
 #
 # Small script to prepare seed job to create the 
 # packerbuilds job on a jenkins instance.
+
 set -e
 PROGRAM_NAME="$(basename "$0")"
 # NOTE: this is the system user that jenkins runs under,

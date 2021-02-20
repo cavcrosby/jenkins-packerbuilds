@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Script that is used to facilitate packerbuilds configurations.
 
 #######################################
 # Usage string for the program.
@@ -6,6 +8,9 @@
 #   PROGRAM_NAME
 # Outputs:
 #   - usage heredoc string to stdout
+# Returns:
+#   0 - cat success
+#   1 - cat error
 #######################################
 usage () {
 	cat << _EOF_
@@ -15,6 +20,7 @@ Options:
 	-o	output a packerbuilds configuration based on jenkins env
 
 _EOF_
+	return
 }
 
 #######################################
@@ -32,6 +38,9 @@ _EOF_
 # Outputs:
 #   - configuration desired, stdout
 #	- error messages, stdout
+# Returns:
+#   0 - general success
+#   1 - general error
 #######################################
 output_conf () {
 	# parameter values expected from jenkins env 
@@ -104,7 +113,8 @@ output_conf () {
 	*)    				echo "${PROGRAM_NAME}: invalid configuration to output -- $OUTPUT_CONF"
 						exit 1
 						;;
-	esac 
+	esac
+	return 0
 }
 
 #######################################
@@ -113,7 +123,7 @@ output_conf () {
 #######################################
 set -e
 PROGRAM_NAME="$(basename "$0")"
-# Define enum type.
+# define enum type
 HYPERVISOR_GUEST_OS_CHOICES=(
 	UBUNTU
 	DEBIAN

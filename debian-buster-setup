@@ -3,14 +3,14 @@
 # Small installer script for Debian Buster. Meant to install 
 # a few things so I don't have to remember all configurations
 # for the system this project runs on.
-#######################################
+#
 # Pre-Running-Script:
 #   Make sure apt is not configured 
 #   to see installer iso as a deb repo.
 # Post-Running-Script:
 #   Invalidate root account, use 
 #   'sudo passwd -l root'.
-#######################################
+
 set -e
 PROGRAM_NAME="$(basename "$0")"
 

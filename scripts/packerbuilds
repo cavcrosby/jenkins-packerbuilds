@@ -1,4 +1,5 @@
 #!/bin/bash
+#
 # Main build step should run this script when constructing
 # a 'packerbuilds' build.
 
