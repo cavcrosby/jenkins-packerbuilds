@@ -59,20 +59,20 @@ output_conf () {
 		["DEBIAN"]="debian-.*"
 	)
 
-	if [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["UBUNTU_FOCAL_PRESEED"]}" -c)" -eq 1 ]; then
+	if [ "$(echo "$ISO_FILE" | grep --extended-regexp "${ISO_REGEXES["UBUNTU_FOCAL_PRESEED"]}" --count)" -eq 1 ]; then
 		OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
 		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
 		PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
 		PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
 		OS_CHOICE="$UBUNTU"
-	elif [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["UBUNTU_EOAM_AND_BELOW"]}" -c)" -eq 1 ]; then
+	elif [ "$(echo "$ISO_FILE" | grep --extended-regexp "${ISO_REGEXES["UBUNTU_EOAM_AND_BELOW"]}" --count)" -eq 1 ]; then
 		# ubuntu versions 19.xx and below
 		OS_BUILD_CONF_NAME="ubuntu_preseed.cfg"
 		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
 		PACKER_BUILD_TEMPLATE_NAME="ubuntu_preseed_build.json"
 		PACKER_BUILD_EVALUSERVARS_NAME="evaluservars"
 		OS_CHOICE="$UBUNTU"
-	elif [ "$(echo "$ISO_FILE" | grep -E "${ISO_REGEXES["DEBIAN"]}" -c)" -eq 1 ]; then
+	elif [ "$(echo "$ISO_FILE" | grep --extended-regexp "${ISO_REGEXES["DEBIAN"]}" --count)" -eq 1 ]; then
 		OS_BUILD_CONF_NAME="debian_preseed.cfg"
 		SHELL_PROVISIONER_NAME="shell-provisioner-apt-get"
 		PACKER_BUILD_TEMPLATE_NAME="debian_preseed_build.json"

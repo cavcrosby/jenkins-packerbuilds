@@ -14,7 +14,7 @@ SEED_WORKSPACE="${JENKINS_HOME}/workspace/seed/"
 
 # check to see if I am root
 ROOT_ID=0
-if [ "$(id -u)" != "$ROOT_ID" ]; then
+if [ "$(id --user)" != "$ROOT_ID" ]; then
     echo "${PROGRAM_NAME}: must be root to run script!"
     exit 1
 fi
