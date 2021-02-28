@@ -61,3 +61,6 @@ From there, there will be some additional setting up (again, assuming you intend
 
 - Using forked repos will require changes to the main 'packerbuilds' script in the scripts folder. Look for the vars: OS_BUILD_CONFS_REPO_URL, SHELL_PROVISIONERS_REPO_URL, and PACKER_BUILD_TEMPLATES_REPO_URL.
 
+## License
+
+See LICENSE.
