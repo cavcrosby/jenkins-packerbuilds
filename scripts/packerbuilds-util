@@ -135,6 +135,8 @@ for ((i=0; i < count; i++)); do
     declare -r "${name}"="$i"
 done
 
+# TODO(conner@conneracrosby.tech): why did I unset name? Look into this and write a comment here and below, can't remember
+
 unset name
 while getopts "ho:" opt; do
 	case "$opt" in
