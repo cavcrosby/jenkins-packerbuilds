@@ -135,9 +135,9 @@ for ((i=0; i < count; i++)); do
     declare -r "${name}"="$i"
 done
 
-# TODO(conner@conneracrosby.tech): why did I unset name? Look into this and write a comment here and below, can't remember
-
-unset name
+# NOTE: opt is unset incase it has been defined previously;
+# getops will place the next option (e.g. o) into opt;
+unset opt
 while getopts "ho:" opt; do
 	case "$opt" in
 	# NOTES:
@@ -159,7 +159,10 @@ while getopts "ho:" opt; do
     esac
 done
 
-if [ -z "$name" ]; then
+# NOTE: incase no options were passed in
+# currently this program/script is not meant to 
+# be called alone with no options.
+if [ "$opt" = "?" ]; then
 	usage
 	exit 1
 fi
