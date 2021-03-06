@@ -19,11 +19,6 @@ if [ "$(id --user)" != "$ROOT_ID" ]; then
     exit 1
 fi
 
-if [ -z "$(which rsync)" ]; then
-    echo "${PROGRAM_NAME}: rsync cannot be found on the PATH!"
-    exit 1
-fi
-
 # shellcheck disable=2140
 cp --recursive "$JOBCONFS_DIR_NAME" "$SEED_WORKSPACE"
 chown --recursive "$JENKINS_SYSTEM_USERNAME":"$JENKINS_SYSTEM_USERNAME" "${SEED_WORKSPACE}/${JOBCONFS_DIR_NAME}"
