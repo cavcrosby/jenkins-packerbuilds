@@ -26,7 +26,10 @@ freeStyleJob ('packerbuilds') {
 
     // Allows to parameterize the job. 
     parameters {
-        // Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy script or a script from the Scriptler catalog. 
+        /* 
+            Defines a parameter that dynamically generates a list of value options 
+            for a build parameter using a Groovy script or a script from the Scriptler catalog. 
+        */
         activeChoiceParam('OPERATING_SYSTEM') {
             description('')
             filterable(false)
@@ -97,10 +100,16 @@ freeStyleJob ('packerbuilds') {
 
     // Adds build triggers to the job.
     triggers {
-        // Adds support for passing parameters to parameterized builds on top of the default scheduler. 
+        /*  
+            Adds support for passing parameters to parameterized 
+            builds on top of the default scheduler. 
+        */
         parameterizedCron {
 
-            // follow convention of cron, schedule with name=value pairs at the end of each line. 
+            /* 
+                follow convention of cron, schedule with name=value 
+                pairs at the end of each line. 
+            */
             parameterizedSpecification(readFileFromWorkspace('./jobconfs/parameterizedcrons'))
 
         }
@@ -111,16 +120,25 @@ freeStyleJob ('packerbuilds') {
         // Binds environment variables to credentials.
         credentialsBinding {
             usernamePassword {
-                // Name of an environment variable to be set to the username during the build.
+                /* 
+                    Name of an environment variable to be set 
+                    to the username during the build.
+                */
                 usernameVariable("JENKINS_GIT_CREDENTIAL_USERNAME ")
-                // Name of an environment variable to be set to the password during the build.
+                /* 
+                    Name of an environment variable to be set 
+                    to the password during the build.
+                */
                 passwordVariable("JENKINS_GIT_CREDENTIAL_PASSWORD")
                 // Credentials of an appropriate type to be set to the variable.
                 credentialsId('')
             }
         }
 
-        // defines an absolute timeout with a maximum build time of one hour and thirty minutes
+        /* 
+            defines an absolute timeout with a maximum 
+            build time of one hour and thirty minutes
+        */
         timeout {
             absolute(90)
         }
@@ -136,11 +154,18 @@ freeStyleJob ('packerbuilds') {
         // Archives artifacts with each build. 
         archiveArtifacts('*/output/*')
 
-        // If configured, Jenkins will send out an e-mail to the specified recipients when a certain important event occurs. 
+        /* 
+            If configured, Jenkins will send out an e-mail to 
+            the specified recipients when a certain important event occurs. 
+        */
         mailer {
             recipients('conner@conneracrosby.tech')
             notifyEveryUnstableBuild(true)
-            // If this option is checked, the notification e-mail will be sent to individuals who have committed changes for the broken build (by assuming that those changes broke the build).
+            /* 
+                If this option is checked, the notification e-mail will be sent 
+                to individuals who have committed changes for the broken build 
+                (by assuming that those changes broke the build).
+            */
             sendToIndividuals(false) 
         }
     }
