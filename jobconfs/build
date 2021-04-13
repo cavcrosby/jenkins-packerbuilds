@@ -1,3 +1,4 @@
+#!/bin/bash
 # NOTES: do not rely on jenkins user global git config file
 # as future projects (this one included) will truncate the generic credential list.
 # What I expect is that cache will allow the program to stash its credentials in memory,
@@ -5,11 +6,6 @@
 
 git config --global credential.helper "cache --timeout=30"
 git config --global credential.username "$JENKINS_GIT_CREDENTIAL_USERNAME"
-DEFAULT_BRANCH_FOR_REPOS=""
-OS_BUILD_CONFS_BRANCH="$DEFAULT_BRANCH_FOR_REPOS"
-SHELL_PROVISIONERS_BRANCH="$DEFAULT_BRANCH_FOR_REPOS"
-PACKER_BUILD_TEMPLATES_BRANCH="$DEFAULT_BRANCH_FOR_REPOS"
-PACKER_EXE=""
 
 . ".env"
 

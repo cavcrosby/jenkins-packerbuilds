@@ -146,7 +146,7 @@ freeStyleJob ('packerbuilds') {
 
     steps {
         // Runs a shell script. 
-        shell(readFileFromWorkspace('./jobconfs/buildstep'))
+        shell(readFileFromWorkspace('./jobconfs/build'))
     }
 
     // Adds post-build actions to the job.

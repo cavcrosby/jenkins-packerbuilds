@@ -8,11 +8,11 @@
 # that is hosted on a jenkins instance.
 # Globals:
 #   WORKSPACE                           (pre-defined)
-#   JENKINS_HOME                        (pre-defined)
-#   OS_BUILD_CONFS_BRANCH               (from build step)
-#   SHELL_PROVISIONERS_BRANCH           (from build step)
-#   PACKER_BUILD_TEMPLATES_BRANCH       (from build step)
-#   PACKER_EXE                          (from build step)
+#   OS_BUILD_CONFS_BRANCH               (from .env)
+#   SHELL_PROVISIONERS_BRANCH           (from .env)
+#   PACKER_BUILD_TEMPLATES_BRANCH       (from .env)
+#   PACKER_EXE                          (from .env)
+#   ISO_IMAGES_PATH                     (from .env)
 #   PROJECT_SCRIPTS_DIRECTORY           (from .env)
 #   PROJECT_BUILDCONFS_DIRECTORY        (from .env)
 #   PACKER_HTTP_DIR_NAME                (from .env)
@@ -36,7 +36,6 @@
 packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
-    ISO_IMAGES_PATH="$JENKINS_HOME/iso_images"
     PACKERBUILDS_CONF_PATH="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuilds.conf"
     PACKERBUILDS_UTIL_PATH="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
 
