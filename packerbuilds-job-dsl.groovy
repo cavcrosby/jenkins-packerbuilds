@@ -92,6 +92,10 @@ freeStyleJob ('packerbuilds') {
     scm {
         git {
             remote {
+                // a shorten tenary operator...the elvis operator!
+                // https://groovy-lang.org/operators.html#_elvis_operator
+                // NOTE: aside, this is also a job binding but should not conflict
+                credentials(System.getenv('JENKINS_GIT_CREDENTIAL_ID') ?: '')
                 url('https://github.com/reap2sow1/jenkins-packerbuilds')
             }
             branch('main')
@@ -131,7 +135,7 @@ freeStyleJob ('packerbuilds') {
                 */
                 passwordVariable("JENKINS_GIT_CREDENTIAL_PASSWORD")
                 // Credentials of an appropriate type to be set to the variable.
-                credentialsId('')
+                credentialsId(System.getenv('JENKINS_GIT_CREDENTIAL_ID') ?: '')
             }
         }
 
