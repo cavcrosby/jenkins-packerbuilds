@@ -2,6 +2,8 @@
 #
 # Script that is used to facilitate packerbuilds configurations.
 
+# TODO(conner@conneracrosby.tech): re-implement in python? e.g. output_conf might be subcommand with others
+
 #######################################
 # Usage string for the program.
 # Globals:
@@ -142,7 +144,7 @@ while getopts "ho:" opt; do
 	case "$opt" in
 	# NOTES:
 	# -o helps determine which packerbuilds configuration to output
-	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins (at least for project packerbuilds)
+	# this should NOT be mandatory for now, as its possible this script can be used else where in jenkins (at least for packerbuilds)
 	# specifying -o without an argument will pass in ':' for 'opt'
 	"o")    OUTPUT_CONF=$OPTARG
 			output_conf
@@ -154,7 +156,12 @@ while getopts "ho:" opt; do
 	":")    echo "${PROGRAM_NAME}: an argument is required for -- $OPTARG"
 			exit 1
 			;;
-    *)		exit 1
+    *)		# NOTE: using the program with no arguments will cause '?'
+			# to be inserted into $opt. However, I've found getopts seems to
+			# handle unknown options (at least those not found in the opt str).
+			# 'shellcheck' seems to say otherwise, and that a default case is needed.
+			usage
+			exit 1
 			;;
     esac
 done

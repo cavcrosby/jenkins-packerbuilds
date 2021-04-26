@@ -14,7 +14,6 @@
 #   PACKER_EXE                          (from .env)
 #   ISO_IMAGES_PATH                     (from .env)
 #   PROJECT_SCRIPTS_DIRECTORY           (from .env)
-#   PROJECT_BUILDCONFS_DIRECTORY        (from .env)
 #   PACKER_HTTP_DIR_NAME                (from .env)
 #   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
@@ -36,9 +35,8 @@
 packerbuilds () {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
-    PACKERBUILDS_CONF_PATH="${PROJECT_BUILDCONFS_DIRECTORY}/packerbuilds.conf"
+    PACKERBUILDS_CONF_PATH="${WORKSPACE}/packerbuilds.conf"
     PACKERBUILDS_UTIL_PATH="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
-
     OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
     PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/reap2sow1/packer-build-templates"
@@ -59,8 +57,9 @@ packerbuilds () {
     fi
     git clone --branch "$PACKER_BUILD_TEMPLATES_BRANCH" "$PACKER_BUILD_TEMPLATES_REPO_URL" "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     
-    # NOTE: some OS versions contain the dot character in them (usually more than one)
-    # to be used as the default hostname for the vm, those will need to be replaced
+    # NOTE: some OS versions contain the dot character in them (usually more than one).
+    # To be used as the default hostname for the VM, those will need to be replaced.
+    # If it was not clear, PACKERBUILDS_BUILD_NAME is used as the VM hostname.
     PACKERBUILDS_BUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
     if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
         PACKERBUILDS_BUILD_NAME="${PACKERBUILDS_BUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
@@ -68,7 +67,9 @@ packerbuilds () {
     if [ -d "$PACKERBUILDS_BUILD_NAME" ]; then
         rm --recursive --force "$PACKERBUILDS_BUILD_NAME"
     fi
+    
     GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL_PATH}" -o guest_os_type)"
+
     if [ -z "$OS_BUILD_CONF_NAME" ]; then
         OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o osconf)"
     fi
@@ -81,6 +82,10 @@ packerbuilds () {
     if [ -z "$SHELL_PROVISIONER_NAME" ]; then
         SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o provisioner)"
     fi
+
+    # NOTE: these might get used in the future, if I intend on identifying 
+    # ISO files or checking by their checksums. Would have to manage/fetch 
+    # official checksums from sources.
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
 
     PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
@@ -89,17 +94,24 @@ packerbuilds () {
     mkdir --parents "$PACKER_HTTP_PATH"
     mkdir --parents "$PACKER_SHELL_PROVISIONER_PATH"
 
+    # Create a packerbuilds dir that will serve files over http and allocate
+    # further configurations via shell provisioners.
+    # NOTE: ensure builder(s) in packer templates can use 'HTTP' as 
+    # a configuration option
     cp "${WORKSPACE}/${OS_BUILD_CONFS_REPO_NAME}/${OS_BUILD_CONF_NAME}" "$PACKER_HTTP_PATH"
     cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "$PACKERBUILDS_CONF_PATH" "$PACKER_HTTP_PATH"
-
     cd "$PACKER_BUILD_ROOT_PATH" || return 1
+
     # shellcheck disable=1090
+    # NOTE: packer templates will have placeholders in them. These will be
+    # evaluated based on env vars in the current env.
     source "$PACKER_BUILD_EVALUSERVARS_NAME"
     "$PACKER_BUILD_EVALUSERVARS_NAME"
 
+    # record env vars into a file ==> PACKERBUILDS_CONF_PATH
     if [ -n "$RECORD_BUILDENV_VARS" ]; then
         read -r -a ENV_VAR_NAME_ARR <<< "$RECORD_BUILDENV_VARS"
         for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
@@ -110,5 +122,6 @@ packerbuilds () {
     if [ -z "$DRY_RUN" ]; then
         "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
     fi
+
     return 0
 }

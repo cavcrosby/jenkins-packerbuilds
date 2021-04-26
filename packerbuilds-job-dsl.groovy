@@ -2,16 +2,12 @@ freeStyleJob ('packerbuilds') {
     
     /*
     #   For Job-DSL API reference see: https://jenkinsci.github.io/job-dsl-plugin/
-    #
-    #   NOTE: Be sure to run the 'prepare-seedjob' script first, or else this seed will fail
-    #   to create the packerbuilds project!
-    #     
+    #  
     #   The following bindings will need to be added manually to packerbuilds job/project configuration.
-    #   Username Variable/Password Variable Respectfully:
+    #   Username variable/password variable respectfully:
     #   JENKINS_GIT_CREDENTIAL_USERNAME 
     #   JENKINS_GIT_CREDENTIAL_PASSWORD
     #
-    #   An SMTP server to connect to will also need to be setup manually.
     */
 
     // Allows Jenkins to schedule and execute multiple builds concurrently.
