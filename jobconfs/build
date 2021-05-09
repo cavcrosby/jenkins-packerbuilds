@@ -6,7 +6,7 @@
 # TODO(conner@conneracrosby.tech): see about re-implementing this part to allow usage of the global git configuration. Otherwise it will be more cumbersome to get the system user the repos needed/desired.
 
 git config --global credential.helper "cache --timeout=30"
-git config --global credential.username "$JENKINS_GIT_CREDENTIAL_USERNAME"
+git config --global credential.username "$JENKINS_GITHUB_CREDENTIAL_USERNAME"
 
 . ".env"
 

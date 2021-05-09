@@ -5,8 +5,8 @@ freeStyleJob ('packerbuilds') {
     #  
     #   The following bindings will need to be added manually to packerbuilds job/project configuration.
     #   Username variable/password variable respectfully:
-    #   JENKINS_GIT_CREDENTIAL_USERNAME 
-    #   JENKINS_GIT_CREDENTIAL_PASSWORD
+    #   JENKINS_GITHUB_CREDENTIAL_USERNAME 
+    #   JENKINS_GITHUB_CREDENTIAL_SECRET
     #
     */
 
@@ -91,7 +91,7 @@ freeStyleJob ('packerbuilds') {
                 // a shorten tenary operator...the elvis operator!
                 // https://groovy-lang.org/operators.html#_elvis_operator
                 // NOTE: aside, this is also a job binding but should not conflict
-                credentials(System.getenv('JENKINS_GIT_CREDENTIAL_ID') ?: '')
+                credentials(System.getenv('JENKINS_GITHUB_CREDENTIAL_ID') ?: '')
                 url('https://github.com/reap2sow1/jenkins-packerbuilds')
             }
             branch('main')
@@ -124,14 +124,14 @@ freeStyleJob ('packerbuilds') {
                     Name of an environment variable to be set 
                     to the username during the build.
                 */
-                usernameVariable("JENKINS_GIT_CREDENTIAL_USERNAME ")
+                usernameVariable("JENKINS_GITHUB_CREDENTIAL_USERNAME ")
                 /* 
                     Name of an environment variable to be set 
                     to the password during the build.
                 */
-                passwordVariable("JENKINS_GIT_CREDENTIAL_PASSWORD")
+                passwordVariable("JENKINS_GITHUB_CREDENTIAL_SECRET")
                 // Credentials of an appropriate type to be set to the variable.
-                credentialsId(System.getenv('JENKINS_GIT_CREDENTIAL_ID') ?: '')
+                credentialsId(System.getenv('JENKINS_GITHUB_CREDENTIAL_ID') ?: '')
             }
         }
 
