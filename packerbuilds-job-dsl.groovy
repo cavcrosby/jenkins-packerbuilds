@@ -92,7 +92,7 @@ freeStyleJob ('packerbuilds') {
                 // https://groovy-lang.org/operators.html#_elvis_operator
                 // NOTE: aside, this is also a job binding but should not conflict
                 credentials(System.getenv('JENKINS_GITHUB_CREDENTIAL_ID') ?: '')
-                url('https://github.com/reap2sow1/jenkins-packerbuilds')
+                url('https://github.com/cavcrosby/jenkins-packerbuilds')
             }
             branch('main')
         }

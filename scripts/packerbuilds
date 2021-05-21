@@ -37,9 +37,9 @@ packerbuilds () {
     cd "$WORKSPACE" || return 1
     PACKERBUILDS_CONF_PATH="${WORKSPACE}/packerbuilds.conf"
     PACKERBUILDS_UTIL_PATH="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
-    OS_BUILD_CONFS_REPO_URL="https://github.com/reap2sow1/os-build-confs"
-    SHELL_PROVISIONERS_REPO_URL="https://github.com/reap2sow1/packer-build-shell-provisioners"
-    PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/reap2sow1/packer-build-templates"
+    OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
+    SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-provisioners"
+    PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/cavcrosby/packer-build-templates"
     OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO_URL")"
     SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO_URL")"
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
