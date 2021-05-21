@@ -159,7 +159,7 @@ freeStyleJob ('packerbuilds') {
             the specified recipients when a certain important event occurs. 
         */
         mailer {
-            recipients('conner@conneracrosby.tech')
+            recipients('conner@cavcrosby.tech')
             notifyEveryUnstableBuild(true)
             /* 
                 If this option is checked, the notification e-mail will be sent 

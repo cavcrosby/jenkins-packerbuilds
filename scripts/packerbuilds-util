@@ -2,7 +2,7 @@
 #
 # Script that is used to facilitate packerbuilds configurations.
 
-# TODO(conner@conneracrosby.tech): re-implement in python? e.g. output_conf might be subcommand with others
+# TODO(cavcrosby): re-implement in python? e.g. output_conf might be subcommand with others
 
 #######################################
 # Usage string for the program.
