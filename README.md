@@ -1,3 +1,5 @@
+# GUIDE IS OUT OF DATE
+
 # jenkins-packerbuilds
 
 This repo serves as the main repo for a Jenkins job/project called 'packerbuilds'. 'packerbuilds' is a freestyle Jenkins job/project attempting to regularly build VM images for me to use as a testing ground. At least, this is the current intention of this project.

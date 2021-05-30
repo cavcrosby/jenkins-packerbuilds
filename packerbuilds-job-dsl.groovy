@@ -38,8 +38,8 @@ freeStyleJob ('packerbuilds') {
 
         /* 
             Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog and that dynamically updates when the value of other job jobconfs
-            controls change. 
+            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
+            parameter is picked.
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM_VERSION') {
             description('')
@@ -52,6 +52,27 @@ freeStyleJob ('packerbuilds') {
             referencedParameter('OPERATING_SYSTEM')
         }
 
+        /* 
+            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
+            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
+            parameter is picked.
+        */
+        activeChoiceReactiveParam('GUEST_OS_TYPE') {
+            description('')
+            filterable(false)
+            choiceType('SINGLE_SELECT')
+            groovyScript {
+                script(readFileFromWorkspace('./jobconfs/guest_os_type_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('OPERATING_SYSTEM')
+        }
+
+        /* 
+            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
+            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM_VERSION
+            parameter is picked.
+        */
         activeChoiceReactiveParam('ISO_FILE') {
             description('')
             filterable(false)
@@ -63,6 +84,11 @@ freeStyleJob ('packerbuilds') {
             referencedParameter('OPERATING_SYSTEM_VERSION')
         }
 
+        /* 
+            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
+            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
+            parameter is picked.
+        */
         activeChoiceReactiveParam('PACKER_BUILDER') {
             description('')
             filterable(false)

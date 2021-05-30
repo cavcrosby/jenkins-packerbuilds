@@ -4,12 +4,38 @@
 # a 'packerbuilds' build.
 
 #######################################
+# Checks to see if env vars that are passed
+# in are defined in the global environment.
+# Globals:
+#	PROGRAM_NAME
+# Outputs:
+#	- error messages, stdout
+# Returns:
+#   0 - all env vars passed in are defined
+#   1 - at least one env var passed in is not defined
+#######################################
+# credits go to:
+# https://stackoverflow.com/questions/29278743/how-to-check-if-multiple-variables-are-defined-or-not-in-bash#answer-65396324
+checkvars() {
+    var_names=("$@")
+    # ndefined ==> not defined
+    for var_name in "${var_names[@]}"; do
+        [ -z "${!var_name}" ] && echo "${PROGRAM_NAME}: $var_name is not defined" && var_ndefined="true"
+    done
+    if [ -n "$var_ndefined" ]; then
+        return 1
+    fi
+    return 0
+}
+
+#######################################
 # Main build script for 'packerbuilds' project
 # that is hosted on a jenkins instance.
 # Globals:
 #   WORKSPACE                           (pre-defined)
 #   OS_BUILD_CONFS_BRANCH               (from .env)
 #   SHELL_PROVISIONERS_BRANCH           (from .env)
+#   SHELL_PROVISIONERS_ENV_FILE_NAME    (from .env)
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from .env)
 #   PACKER_EXE                          (from .env)
 #   ISO_IMAGES_PATH                     (from .env)
@@ -18,31 +44,38 @@
 #   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
+#   GUEST_OS_TYPE                       (from jenkin parameters)
 #   ISO_FILE                            (from jenkin parameters)
 #   PACKER_BUILDER                      (from jenkin parameters)
 #   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
 #   RECORD_BUILDENV_VARS                (from jenkin parameters)
 #   DRY_RUN                             (from jenkin parameters)
-#   OS_BUILD_CONF_NAME                  (from jenkin parameters/this script)
-#   PACKER_BUILD_TEMPLATE_NAME          (from jenkin parameters/this script)
-#   PACKER_BUILD_EVALUSERVARS_NAME      (from jenkin parameters/this script)
-#   SHELL_PROVISIONER_NAME              (from jenkin parameters/this script)
+#   OS_BUILD_CONF_NAME                  (from jenkin parameters)
+#   PACKER_BUILD_TEMPLATE_NAME          (from jenkin parameters)
+#   PACKER_BUILD_EVALUSERVARS_NAME      (from jenkin parameters)
+#   SHELL_PROVISIONER_NAME              (from jenkin parameters)
 # Outputs:
 #   - git commands output to stdout/stderr
 #   - unix command output to stdout/stderr
 #   - packer output to stdout/stderr
 #######################################
-packerbuilds () {
+packerbuilds() {
     # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
+    PROGRAM_NAME="packerbuilds"
     PACKERBUILDS_CONF_PATH="${WORKSPACE}/packerbuilds.conf"
-    PACKERBUILDS_UTIL_PATH="${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds-util"
     OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-provisioners"
     PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/cavcrosby/packer-build-templates"
     OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO_URL")"
     SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO_URL")"
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
+    ENV_VAR_NAMES_NEEDED=(
+        OS_BUILD_CONF_NAME
+        PACKER_BUILD_TEMPLATE_NAME
+        PACKER_BUILD_EVALUSERVARS_NAME
+        SHELL_PROVISIONER_NAME
+    )
 
     if [ -d "$OS_BUILD_CONFS_REPO_NAME" ]; then
         rm --recursive --force "$OS_BUILD_CONFS_REPO_NAME"
@@ -67,20 +100,10 @@ packerbuilds () {
     if [ -d "$PACKERBUILDS_BUILD_NAME" ]; then
         rm --recursive --force "$PACKERBUILDS_BUILD_NAME"
     fi
-    
-    GUEST_OS_TYPE="$("${PACKERBUILDS_UTIL_PATH}" -o guest_os_type)"
 
-    if [ -z "$OS_BUILD_CONF_NAME" ]; then
-        OS_BUILD_CONF_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o osconf)"
-    fi
-    if [ -z "$PACKER_BUILD_TEMPLATE_NAME" ]; then
-        PACKER_BUILD_TEMPLATE_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o template)"
-    fi
-    if [ -z "$PACKER_BUILD_EVALUSERVARS_NAME" ]; then
-        PACKER_BUILD_EVALUSERVARS_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o evaluservars)"
-    fi
-    if [ -z "$SHELL_PROVISIONER_NAME" ]; then
-        SHELL_PROVISIONER_NAME="$("${PACKERBUILDS_UTIL_PATH}" -o provisioner)"
+    # we don't want to run packer unless we know we have everything we need
+    if ! checkvars "${ENV_VAR_NAMES_NEEDED[@]}"; then
+        return 1
     fi
 
     # NOTE: these might get used in the future, if I intend on identifying 
@@ -100,6 +123,7 @@ packerbuilds () {
     # a configuration option
     cp "${WORKSPACE}/${OS_BUILD_CONFS_REPO_NAME}/${OS_BUILD_CONF_NAME}" "$PACKER_HTTP_PATH"
     cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
+    cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONERS_ENV_FILE_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "$PACKERBUILDS_CONF_PATH" "$PACKER_HTTP_PATH"
