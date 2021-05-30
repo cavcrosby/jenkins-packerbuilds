@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 # NOTES: do not rely on jenkins user global git config file
 # as future projects (this one included) will truncate the generic credential list.
 # What I expect is that cache will allow the program to stash its credentials in memory,
