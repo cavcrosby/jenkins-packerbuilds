@@ -36,12 +36,14 @@ checkvars() {
 #   OS_BUILD_CONFS_BRANCH               (from .env)
 #   SHELL_PROVISIONERS_BRANCH           (from .env)
 #   SHELL_PROVISIONERS_ENV_FILE_NAME    (from .env)
+#   SHELL_PROCESSORS_BRANCH             (from .env)
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from .env)
 #   PACKER_EXE                          (from .env)
 #   ISO_IMAGES_PATH                     (from .env)
 #   PROJECT_SCRIPTS_DIRECTORY           (from .env)
 #   PACKER_HTTP_DIR_NAME                (from .env)
 #   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
+#   SHELL_PREPROCESSOR                  (from jenkin parameters)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
 #   GUEST_OS_TYPE                       (from jenkin parameters)
@@ -60,15 +62,16 @@ checkvars() {
 #   - packer output to stdout/stderr
 #######################################
 packerbuilds() {
-    # it's assumed jenkins will call bash with flags -xe
     cd "$WORKSPACE" || return 1
     PROGRAM_NAME="packerbuilds"
     PACKERBUILDS_CONF_PATH="${WORKSPACE}/packerbuilds.conf"
     OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
     SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-provisioners"
+    SHELL_PROCESSORS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-processors"
     PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/cavcrosby/packer-build-templates"
     OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO_URL")"
     SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO_URL")"
+    SHELL_PROCESSORS_REPO_NAME="$(basename "$SHELL_PROCESSORS_REPO_URL")"
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
     ENV_VAR_NAMES_NEEDED=(
         OS_BUILD_CONF_NAME
@@ -81,10 +84,17 @@ packerbuilds() {
         rm --recursive --force "$OS_BUILD_CONFS_REPO_NAME"
     fi
     git clone --branch "$OS_BUILD_CONFS_BRANCH" "$OS_BUILD_CONFS_REPO_URL" "$OS_BUILD_CONFS_REPO_NAME"
+
     if [ -d "$SHELL_PROVISIONERS_REPO_NAME" ]; then
         rm --recursive --force "$SHELL_PROVISIONERS_REPO_NAME"
     fi
     git clone --branch "$SHELL_PROVISIONERS_BRANCH" "$SHELL_PROVISIONERS_REPO_URL" "$SHELL_PROVISIONERS_REPO_NAME"
+    
+    if [ -d "$SHELL_PROCESSORS_REPO_NAME" ]; then
+        rm --recursive --force "$SHELL_PROCESSORS_REPO_NAME"
+    fi
+    git clone --branch "$SHELL_PROCESSORS_BRANCH" "$SHELL_PROCESSORS_REPO_URL" "$SHELL_PROCESSORS_REPO_NAME"
+
     if [ -d "$PACKER_BUILD_TEMPLATES_REPO_NAME" ]; then
         rm --recursive --force "$PACKER_BUILD_TEMPLATES_REPO_NAME"
     fi
@@ -127,6 +137,23 @@ packerbuilds() {
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "$PACKERBUILDS_CONF_PATH" "$PACKER_HTTP_PATH"
+
+    # NOTES: packer supports the notion of local shell post processing and
+    # provisioning (this occurs after the VM boots, regardless whether the
+    # shell code runs on the VM or not) on the local machine but not before
+    # processing the packer template. This is in attempt to replicate the idea
+    # of shell pre processing (or preprocessing).
+    # shellcheck disable=1090
+    if [ -n "$SHELL_PREPROCESSOR" ]; then
+        if [ -f "${WORKSPACE}/${SHELL_PROCESSORS_REPO_NAME}/${SHELL_PREPROCESSOR}" ]; then
+            . "${WORKSPACE}/${SHELL_PROCESSORS_REPO_NAME}/${SHELL_PREPROCESSOR}"
+        else
+            "${PROGRAM_NAME}: preprocessor was specified but does not exist in $SHELL_PROCESSORS_REPO_NAME"
+            return 1
+        fi
+    fi
+
+    # any code from here is running inside the packer build dir
     cd "$PACKER_BUILD_ROOT_PATH" || return 1
 
     # shellcheck disable=1090

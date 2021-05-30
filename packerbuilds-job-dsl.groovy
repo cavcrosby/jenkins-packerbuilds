@@ -101,13 +101,14 @@ freeStyleJob ('packerbuilds') {
         }
 
         // Defines a simple text parameter, where users can enter a string value. 
-        stringParam('OTHER_PACKERBUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. _buildname-_OTHER_PACKERBUILD_NAME_CRITERIA). Useful for making a special packerbuilds.')
-        stringParam('RECORD_BUILDENV_VARS', '', '''Currently this should be a space separated character string (e.g. "FOO BAR FOOBAR") used to record env var names and values into the 'packerbuilds.conf' file.''')
-        stringParam('DRY_RUN', '', '''Same as performing a normal build except the packer executable does not actually run. Useful to do a manually build on the generated template from the build directory. Any input for this field will cause  'dry run'.''')
+        stringParam('SHELL_PREPROCESSOR', '', 'The name of a shell script located in the respective repo to source (e.g. not running, sourced into the same shell session) before running packer.')
         stringParam('OS_BUILD_CONF_NAME', '', '')
         stringParam('SHELL_PROVISIONER_NAME', '', '')
         stringParam('PACKER_BUILD_TEMPLATE_NAME', '', '')
         stringParam('PACKER_BUILD_EVALUSERVARS_NAME', '', '')
+        stringParam('OTHER_PACKERBUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. _buildname-_OTHER_PACKERBUILD_NAME_CRITERIA). Useful for making a special packerbuilds.')
+        stringParam('RECORD_BUILDENV_VARS', '', '''Currently this should be a space separated character string (e.g. "FOO BAR FOOBAR") used to record env var names and values into the 'packerbuilds.conf' file.''')
+        stringParam('DRY_RUN', '', '''Same as performing a normal build except the packer executable does not actually run. Useful to do a manually build on the generated template from the build directory. Any input for this field will cause  'dry run'.''')
     }
 
     // Allows a job to check out sources from an SCM provider. 
