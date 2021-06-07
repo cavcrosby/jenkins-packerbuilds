@@ -9,7 +9,7 @@ git config --global credential.helper "cache --timeout=30"
 git config --global credential.username "$JENKINS_GITHUB_CREDENTIAL_USERNAME"
 
 # shellcheck disable=1091
-. ".env"
+. "${PWD}/.env"
 
 # shellcheck disable=1091
 . "${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds"

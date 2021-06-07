@@ -1,4 +1,0 @@
-return [
-    "ubuntu:selected",
-    "debian"
-]

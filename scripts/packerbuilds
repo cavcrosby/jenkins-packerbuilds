@@ -8,6 +8,7 @@
 # in are defined in the global environment.
 # Globals:
 #	PROGRAM_NAME
+#   BUILD_TYPE
 # Outputs:
 #	- error messages, stdout
 # Returns:
@@ -20,7 +21,15 @@ checkvars() {
     var_names=("$@")
     # ndefined ==> not defined
     for var_name in "${var_names[@]}"; do
-        [ -z "${!var_name}" ] && echo "${PROGRAM_NAME}: $var_name is not defined" && var_ndefined="true"
+        if [ -z "${!var_name}" ]; then
+            if [ "$var_name" = "SHELL_PROVISIONER_NAME" ] && [ "$BUILD_TYPE" = "project" ]; then
+                # NOTE: it is assumed that project builds will have hard coded their
+                # shell provisioners
+                continue
+            fi
+            echo "${PROGRAM_NAME}: $var_name is not defined"
+            var_ndefined="true"
+        fi
     done
     if [ -n "$var_ndefined" ]; then
         return 1
@@ -35,27 +44,28 @@ checkvars() {
 #   WORKSPACE                           (pre-defined)
 #   OS_BUILD_CONFS_BRANCH               (from .env)
 #   SHELL_PROVISIONERS_BRANCH           (from .env)
-#   SHELL_PROVISIONERS_ENV_FILE_NAME    (from .env)
+#   SHELL_PROVISIONERS_CONFIG_FILE_NAME (from .env)
 #   SHELL_PROCESSORS_BRANCH             (from .env)
 #   PACKER_BUILD_TEMPLATES_BRANCH       (from .env)
 #   PACKER_EXE                          (from .env)
 #   ISO_IMAGES_PATH                     (from .env)
-#   PROJECT_SCRIPTS_DIRECTORY           (from .env)
 #   PACKER_HTTP_DIR_NAME                (from .env)
 #   PACKER_SHELL_PROVISIONERS_DIR_NAME  (from .env)
 #   SHELL_PREPROCESSOR                  (from jenkin parameters)
+#   BUILD_TYPE                          (from jenkin parameters)
+#   PROJECT_NAME                        (from jenkin parameters)
 #   OPERATING_SYSTEM                    (from jenkin parameters)
 #   OPERATING_SYSTEM_VERSION            (from jenkin parameters)
 #   GUEST_OS_TYPE                       (from jenkin parameters)
 #   ISO_FILE                            (from jenkin parameters)
 #   PACKER_BUILDER                      (from jenkin parameters)
-#   OTHER_PACKERBUILD_NAME_CRITERIA     (from jenkin parameters)
+#   OS_BUILD_CONF_NAME                  (from jenkin parameters)
+#   PACKER_TEMPLATE_NAME          (from jenkin parameters)
+#   PACKER_EVALUSERVARS_NAME      (from jenkin parameters)
+#   SHELL_PROVISIONER_NAME              (from jenkin parameters)
+#   OTHER_BUILD_NAME_CRITERIA     (from jenkin parameters)
 #   RECORD_BUILDENV_VARS                (from jenkin parameters)
 #   DRY_RUN                             (from jenkin parameters)
-#   OS_BUILD_CONF_NAME                  (from jenkin parameters)
-#   PACKER_BUILD_TEMPLATE_NAME          (from jenkin parameters)
-#   PACKER_BUILD_EVALUSERVARS_NAME      (from jenkin parameters)
-#   SHELL_PROVISIONER_NAME              (from jenkin parameters)
 # Outputs:
 #   - git commands output to stdout/stderr
 #   - unix command output to stdout/stderr
@@ -66,17 +76,17 @@ packerbuilds() {
     PROGRAM_NAME="packerbuilds"
     PACKERBUILDS_CONF_PATH="${WORKSPACE}/packerbuilds.conf"
     OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
-    SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-provisioners"
-    SHELL_PROCESSORS_REPO_URL="https://github.com/cavcrosby/packer-build-shell-processors"
-    PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/cavcrosby/packer-build-templates"
+    SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-shell-provisioners"
+    SHELL_PROCESSORS_REPO_URL="https://github.com/cavcrosby/packer-shell-processors"
+    PACKER_BUILD_TEMPLATES_REPO_URL="https://github.com/cavcrosby/packer-templates"
     OS_BUILD_CONFS_REPO_NAME="$(basename "$OS_BUILD_CONFS_REPO_URL")"
     SHELL_PROVISIONERS_REPO_NAME="$(basename "$SHELL_PROVISIONERS_REPO_URL")"
     SHELL_PROCESSORS_REPO_NAME="$(basename "$SHELL_PROCESSORS_REPO_URL")"
     PACKER_BUILD_TEMPLATES_REPO_NAME="$(basename "$PACKER_BUILD_TEMPLATES_REPO_URL")"
     ENV_VAR_NAMES_NEEDED=(
         OS_BUILD_CONF_NAME
-        PACKER_BUILD_TEMPLATE_NAME
-        PACKER_BUILD_EVALUSERVARS_NAME
+        PACKER_TEMPLATE_NAME
+        PACKER_EVALUSERVARS_NAME
         SHELL_PROVISIONER_NAME
     )
 
@@ -102,13 +112,13 @@ packerbuilds() {
     
     # NOTE: some OS versions contain the dot character in them (usually more than one).
     # To be used as the default hostname for the VM, those will need to be replaced.
-    # If it was not clear, PACKERBUILDS_BUILD_NAME is used as the VM hostname.
-    PACKERBUILDS_BUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
-    if [ -n "$OTHER_PACKERBUILD_NAME_CRITERIA" ]; then
-        PACKERBUILDS_BUILD_NAME="${PACKERBUILDS_BUILD_NAME}-${OTHER_PACKERBUILD_NAME_CRITERIA}"
+    # If it was not clear, BUILD_NAME is used as the VM name/hostname.
+    BUILD_NAME=${PACKER_BUILDER}-${OPERATING_SYSTEM}-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
+    if [ -n "$OTHER_BUILD_NAME_CRITERIA" ]; then
+        BUILD_NAME="${BUILD_NAME}-${OTHER_BUILD_NAME_CRITERIA}"
     fi
-    if [ -d "$PACKERBUILDS_BUILD_NAME" ]; then
-        rm --recursive --force "$PACKERBUILDS_BUILD_NAME"
+    if [ -d "$BUILD_NAME" ]; then
+        rm --recursive --force "$BUILD_NAME"
     fi
 
     # we don't want to run packer unless we know we have everything we need
@@ -121,22 +131,37 @@ packerbuilds() {
     # official checksums from sources.
     read -r ISO_CHECKSUM IGNORE <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")" # output from sha256sum: hash iso_filename
 
-    PACKER_HTTP_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
-    PACKER_SHELL_PROVISIONER_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
-    PACKER_BUILD_ROOT_PATH="${WORKSPACE}/${PACKERBUILDS_BUILD_NAME}"
+    PACKER_HTTP_PATH="${WORKSPACE}/${BUILD_NAME}/${PACKER_HTTP_DIR_NAME}"
+    PACKER_SHELL_PROVISIONERS_PATH="${WORKSPACE}/${BUILD_NAME}/${PACKER_SHELL_PROVISIONERS_DIR_NAME}"
+    PACKER_BUILD_ROOT_PATH="${WORKSPACE}/${BUILD_NAME}"
     mkdir --parents "$PACKER_HTTP_PATH"
-    mkdir --parents "$PACKER_SHELL_PROVISIONER_PATH"
+    mkdir --parents "$PACKER_SHELL_PROVISIONERS_PATH"
 
     # Create a packerbuilds dir that will serve files over http and allocate
     # further configurations via shell provisioners.
     # NOTE: ensure builder(s) in packer templates can use 'HTTP' as 
     # a configuration option
     cp "${WORKSPACE}/${OS_BUILD_CONFS_REPO_NAME}/${OS_BUILD_CONF_NAME}" "$PACKER_HTTP_PATH"
-    cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONER_PATH"
-    cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONERS_ENV_FILE_NAME}" "$PACKER_BUILD_ROOT_PATH"
-    cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
-    cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_BUILD_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
+    cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONERS_CONFIG_FILE_NAME}" "$PACKER_HTTP_PATH"
+    cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_TEMPLATE_NAME}" "$PACKER_BUILD_ROOT_PATH"
+    cp "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_EVALUSERVARS_NAME}" "$PACKER_BUILD_ROOT_PATH"
     cp "$PACKERBUILDS_CONF_PATH" "$PACKER_HTTP_PATH"
+
+    # NOTES: with the creation of the notion that there can
+    # be basic/project (e.g. and others) VM builds. Project
+    # builds differentiate in that the shell provisioners can be
+    # numerous. Thus, packerbuilds should be able to aknowledge this
+    # and move over the numerous shell provisioners as needed.
+    if [ "$BUILD_TYPE" = "project" ]; then
+        # grabs each provisioner's script from the script/scripts element
+        # pscript_name ==> provisioner script name
+        for pscript_name in $(jq < "${WORKSPACE}/${PACKER_BUILD_TEMPLATES_REPO_NAME}/${PACKER_TEMPLATE_NAME}" \
+            --raw-output '.["provisioners"][] | .script // .["scripts"][]' | xargs basename --multiple); do
+            cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${pscript_name}" "$PACKER_SHELL_PROVISIONERS_PATH"
+        done
+    else
+        cp "${WORKSPACE}/${SHELL_PROVISIONERS_REPO_NAME}/${SHELL_PROVISIONER_NAME}" "$PACKER_SHELL_PROVISIONERS_PATH"
+    fi
 
     # NOTES: packer supports the notion of local shell post processing and
     # provisioning (this occurs after the VM boots, regardless whether the
@@ -159,8 +184,8 @@ packerbuilds() {
     # shellcheck disable=1090
     # NOTE: packer templates will have placeholders in them. These will be
     # evaluated based on env vars in the current env.
-    source "$PACKER_BUILD_EVALUSERVARS_NAME"
-    "$PACKER_BUILD_EVALUSERVARS_NAME"
+    . "${PWD}/${PACKER_EVALUSERVARS_NAME}"
+    "$PACKER_EVALUSERVARS_NAME"
 
     # record env vars into a file ==> PACKERBUILDS_CONF_PATH
     if [ -n "$RECORD_BUILDENV_VARS" ]; then
@@ -171,7 +196,7 @@ packerbuilds() {
     fi
 
     if [ -z "$DRY_RUN" ]; then
-        "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_BUILD_TEMPLATE_NAME"
+        "$PACKER_EXE" build -only "$PACKER_BUILDER" "$PACKER_TEMPLATE_NAME"
     fi
 
     return 0

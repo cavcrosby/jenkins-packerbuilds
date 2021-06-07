@@ -3,7 +3,8 @@ freeStyleJob ('packerbuilds') {
     /*
     #   For Job-DSL API reference see: https://jenkinsci.github.io/job-dsl-plugin/
     #  
-    #   The following bindings will need to be added manually to packerbuilds job/project configuration.
+    #   The following bindings will need to be added manually to packerbuilds 
+    #   job/project configuration.
     #   Username variable/password variable respectfully:
     #   JENKINS_GITHUB_CREDENTIAL_USERNAME 
     #   JENKINS_GITHUB_CREDENTIAL_SECRET
@@ -11,8 +12,8 @@ freeStyleJob ('packerbuilds') {
     */
 
     // Allows Jenkins to schedule and execute multiple builds concurrently.
-    // NOTE: To add, I've seen odd behavior doing concurrent packerbuilds builds, 
-    // so for now it's best todo them one at a time.
+    // NOTE: To add, I've seen odd behavior doing concurrent packerbuilds 
+    // builds, so for now it's best todo them one at a time.
     concurrentBuild(false) 
 
     logRotator {
@@ -23,90 +24,176 @@ freeStyleJob ('packerbuilds') {
     // Allows to parameterize the job. 
     parameters {
         /* 
-            Defines a parameter that dynamically generates a list of value options 
-            for a build parameter using a Groovy script or a script from the Scriptler catalog. 
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the 
+            Scriptler catalog.
         */
-        activeChoiceParam('OPERATING_SYSTEM') {
+        activeChoiceParam('BUILD_TYPE') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./jobconfs/operating_systems_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/build_type_parameter.groovy'))
                 fallbackScript('')
             }
         }
 
+        activeChoiceReactiveParam('PROJECT_NAME') {
+            description('')
+            filterable(false)
+            choiceType('SINGLE_SELECT')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/project_name_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('BUILD_TYPE')
+        }
+
         /* 
-            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
-            parameter is picked.
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the
+            Scriptler catalog. The choices dynamically update when the value of
+            BUILD_TYPE or PROJECT_NAME parameter is picked.
+        */
+        activeChoiceReactiveParam('OPERATING_SYSTEM') {
+            description('')
+            filterable(false)
+            choiceType('SINGLE_SELECT')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/operating_systems_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('BUILD_TYPE')
+            referencedParameter('PROJECT_NAME')
+        }
+
+        /* 
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the 
+            Scriptler catalog. The choices dynamically update when the value of 
+            OPERATING_SYSTEM parameter is picked.
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM_VERSION') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./jobconfs/operating_system_versions_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/operating_system_versions_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('OPERATING_SYSTEM')
         }
 
-        /* 
-            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
-            parameter is picked.
-        */
         activeChoiceReactiveParam('GUEST_OS_TYPE') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./jobconfs/guest_os_type_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/guest_os_type_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('OPERATING_SYSTEM')
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM_VERSION
-            parameter is picked.
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the 
+            Scriptler catalog. The choices dynamically update when the value of
+            OPERATING_SYSTEM_VERSION or OPERATING_SYSTEM parameter is picked.
         */
         activeChoiceReactiveParam('ISO_FILE') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./jobconfs/iso_files_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/iso_files_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('OPERATING_SYSTEM_VERSION')
+            referencedParameter('OPERATING_SYSTEM')
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options for a build parameter using a Groovy
-            script or a script from the Scriptler catalog. The choices dynamically update when the value of OPERATING_SYSTEM
-            parameter is picked.
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the 
+            Scriptler catalog. The choices dynamically update when the value of
+            ISO_FILE or OPERATING_SYSTEM parameter is picked.
         */
         activeChoiceReactiveParam('PACKER_BUILDER') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./jobconfs/packer_builder_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/packer_builder_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('ISO_FILE')
+            referencedParameter('OPERATING_SYSTEM')
         }
 
-        // Defines a simple text parameter, where users can enter a string value. 
-        stringParam('SHELL_PREPROCESSOR', '', 'The name of a shell script located in the respective repo to source (e.g. not running, sourced into the same shell session) before running packer.')
-        stringParam('OS_BUILD_CONF_NAME', '', '')
-        stringParam('SHELL_PROVISIONER_NAME', '', '')
-        stringParam('PACKER_BUILD_TEMPLATE_NAME', '', '')
-        stringParam('PACKER_BUILD_EVALUSERVARS_NAME', '', '')
-        stringParam('OTHER_PACKERBUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. _buildname-_OTHER_PACKERBUILD_NAME_CRITERIA). Useful for making a special packerbuilds.')
+        /*
+            Defines a parameter that dynamically generates a list of value options
+            for a build parameter using a Groovy script or a script from the 
+            Scriptler catalog. The default value dynamically updates when the value of
+            PROJECT_NAME is picked.
+        */
+        activeChoiceReactiveReferenceParam('SHELL_PREPROCESSOR') {
+            description('The name of a shell script located in the respective repo to source (e.g. not running, sourced into the same shell session) before running packer.')
+            omitValueField(true)
+            choiceType('FORMATTED_HTML')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/shell_preprocessor_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('PROJECT_NAME')
+        }
+
+        activeChoiceReactiveReferenceParam('OS_BUILD_CONF_NAME') {
+            description('')
+            omitValueField(true)
+            choiceType('FORMATTED_HTML')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/os_build_conf_name_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('PROJECT_NAME')
+        }
+
+        activeChoiceReactiveReferenceParam('SHELL_PROVISIONER_NAME') {
+            description('')
+            omitValueField(true)
+            choiceType('FORMATTED_HTML')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/shell_provisioner_name_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('PROJECT_NAME')
+        }
+
+        activeChoiceReactiveReferenceParam('PACKER_TEMPLATE_NAME') {
+            description('')
+            omitValueField(true)
+            choiceType('FORMATTED_HTML')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/packer_template_name_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('PROJECT_NAME')
+        }
+
+        activeChoiceReactiveReferenceParam('PACKER_EVALUSERVARS_NAME') {
+            description('')
+            omitValueField(true)
+            choiceType('FORMATTED_HTML')
+            groovyScript {
+                script(readFileFromWorkspace('./configs/job/parameters/packer_evaluservars_name_parameter.groovy'))
+                fallbackScript('')
+            }
+            referencedParameter('PROJECT_NAME')
+        }
+
+        // Defines a simple text parameter, where users can enter a string value.
+        stringParam('OTHER_BUILD_NAME_CRITERIA', '', 'The input will be appended to the build name with a dash, (e.g. _buildname-_OTHER_BUILD_NAME_CRITERIA). Useful for making a special packerbuilds.')
         stringParam('RECORD_BUILDENV_VARS', '', '''Currently this should be a space separated character string (e.g. "FOO BAR FOOBAR") used to record env var names and values into the 'packerbuilds.conf' file.''')
         stringParam('DRY_RUN', '', '''Same as performing a normal build except the packer executable does not actually run. Useful to do a manually build on the generated template from the build directory. Any input for this field will cause  'dry run'.''')
     }
@@ -137,7 +224,7 @@ freeStyleJob ('packerbuilds') {
                 follow convention of cron, schedule with name=value 
                 pairs at the end of each line. 
             */
-            parameterizedSpecification(readFileFromWorkspace('./jobconfs/parameterizedcrons'))
+            parameterizedSpecification(readFileFromWorkspace('./configs/job/parameterizedcrons'))
 
         }
     }
@@ -173,7 +260,7 @@ freeStyleJob ('packerbuilds') {
 
     steps {
         // Runs a shell script. 
-        shell(readFileFromWorkspace('./jobconfs/build'))
+        shell(readFileFromWorkspace('./configs/job/build'))
     }
 
     // Adds post-build actions to the job.
