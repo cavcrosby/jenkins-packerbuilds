@@ -8,11 +8,11 @@
 # TODO(cavcrosby): GitHub sees .tpl files associated with the web template system called Smarty. Perhaps change this to something different?
 
 git config --global credential.helper "cache --timeout=30"
-git config --global credential.username "$JENKINS_GITHUB_CREDENTIAL_USERNAME"
+git config --global credential.username "${JENKINS_GITHUB_CREDENTIAL_USERNAME}"
 
 # shellcheck disable=1091
 . "${PWD}/.env"
 
 # shellcheck disable=1091
-. "${PROJECT_SCRIPTS_DIRECTORY}/packerbuilds"
+. "${PROJECT_SCRIPTS_DIR_PATH}/packerbuilds"
 packerbuilds

@@ -38,12 +38,12 @@ freeStyleJob ('packerbuilds') {
             }
         }
 
-        activeChoiceReactiveParam('PROJECT_NAME') {
+        activeChoiceReactiveParam('PROJECT') {
             description('')
             filterable(false)
             choiceType('SINGLE_SELECT')
             groovyScript {
-                script(readFileFromWorkspace('./configs/job/parameters/project_name_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/project_parameter.groovy'))
                 fallbackScript('')
             }
             referencedParameter('BUILD_TYPE')
@@ -53,7 +53,7 @@ freeStyleJob ('packerbuilds') {
             Defines a parameter that dynamically generates a list of value options
             for a build parameter using a Groovy script or a script from the
             Scriptler catalog. The choices dynamically update when the value of
-            BUILD_TYPE or PROJECT_NAME parameter is picked.
+            BUILD_TYPE or PROJECT parameter is picked.
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM') {
             description('')
@@ -64,7 +64,7 @@ freeStyleJob ('packerbuilds') {
                 fallbackScript('')
             }
             referencedParameter('BUILD_TYPE')
-            referencedParameter('PROJECT_NAME')
+            referencedParameter('PROJECT')
         }
 
         /* 
@@ -135,7 +135,7 @@ freeStyleJob ('packerbuilds') {
             Defines a parameter that dynamically generates a list of value options
             for a build parameter using a Groovy script or a script from the 
             Scriptler catalog. The default value dynamically updates when the value of
-            PROJECT_NAME is picked.
+            PROJECT is picked.
         */
         activeChoiceReactiveReferenceParam('SHELL_PREPROCESSOR') {
             description('The name of a shell script located in the respective repo to source (e.g. not running, sourced into the same shell session) before running packer.')
@@ -145,51 +145,40 @@ freeStyleJob ('packerbuilds') {
                 script(readFileFromWorkspace('./configs/job/parameters/shell_preprocessor_parameter.groovy'))
                 fallbackScript('')
             }
-            referencedParameter('PROJECT_NAME')
+            referencedParameter('PROJECT')
         }
 
-        activeChoiceReactiveReferenceParam('OS_BUILD_CONF_NAME') {
+        activeChoiceReactiveReferenceParam('OS_BUILD_CONF') {
             description('')
             omitValueField(true)
             choiceType('FORMATTED_HTML')
             groovyScript {
-                script(readFileFromWorkspace('./configs/job/parameters/os_build_conf_name_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/os_build_conf_parameter.groovy'))
                 fallbackScript('')
             }
-            referencedParameter('PROJECT_NAME')
+            referencedParameter('PROJECT')
         }
 
-        activeChoiceReactiveReferenceParam('SHELL_PROVISIONER_NAME') {
+        activeChoiceReactiveReferenceParam('SHELL_PROVISIONER') {
             description('')
             omitValueField(true)
             choiceType('FORMATTED_HTML')
             groovyScript {
-                script(readFileFromWorkspace('./configs/job/parameters/shell_provisioner_name_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/shell_provisioner_parameter.groovy'))
                 fallbackScript('')
             }
-            referencedParameter('PROJECT_NAME')
+            referencedParameter('PROJECT')
         }
 
-        activeChoiceReactiveReferenceParam('PACKER_TEMPLATE_NAME') {
+        activeChoiceReactiveReferenceParam('PACKER_TEMPLATE') {
             description('')
             omitValueField(true)
             choiceType('FORMATTED_HTML')
             groovyScript {
-                script(readFileFromWorkspace('./configs/job/parameters/packer_template_name_parameter.groovy'))
+                script(readFileFromWorkspace('./configs/job/parameters/packer_template_parameter.groovy'))
                 fallbackScript('')
             }
-            referencedParameter('PROJECT_NAME')
-        }
-
-        activeChoiceReactiveReferenceParam('PACKER_EVALUSERVARS_NAME') {
-            description('')
-            omitValueField(true)
-            choiceType('FORMATTED_HTML')
-            groovyScript {
-                script(readFileFromWorkspace('./configs/job/parameters/packer_evaluservars_name_parameter.groovy'))
-                fallbackScript('')
-            }
-            referencedParameter('PROJECT_NAME')
+            referencedParameter('PROJECT')
         }
 
         // Defines a simple text parameter, where users can enter a string value.

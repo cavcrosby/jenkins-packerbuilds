@@ -43,7 +43,7 @@ Then select the radio button named, "Use the provided DSL script", and paste in 
 ![image](https://user-images.githubusercontent.com/31086993/105564218-33be9800-5cef-11eb-9e6a-fadb8266e714.png)
 
 From there, there will be some additional setting up (again, assuming you intend on using this in it's current implementation):
-- Installing **HashiCorp**'s packer in the directory pointed to by PACKER_EXE (.env).
+- Installing **HashiCorp**'s packer in the directory pointed to by PACKER_EXE_PATH (.env).
   - .env at the moment might have missing values needed for some of its env variables.
 - Installing Oracle's VirtualBox.
 - Jenkins 'Credentials' will need to be setup, though they may not get used by a build if the jenkins-packerbuilds repo is public or not private. These 'Credentials' will need to be setup in the 'Bindings' section.
@@ -52,7 +52,7 @@ From there, there will be some additional setting up (again, assuming you intend
 
 ## Installation Notes
 
-- Using forked repos will require changes to the main 'packerbuilds' script in the scripts folder. Look for the vars: OS_BUILD_CONFS_REPO_URL, SHELL_PROVISIONERS_REPO_URL, and PACKER_BUILD_TEMPLATES_REPO_URL.
+- Using forked repos will require changes to the main 'packerbuilds' script in the scripts folder. Look for the vars: OS_BUILD_CONFS_REPO_URL, SHELL_PROVISIONERS_REPO_URL, and PACKER_TEMPLATES_REPO_URL.
 
 ## License
 
