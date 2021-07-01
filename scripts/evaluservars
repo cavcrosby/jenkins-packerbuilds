@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+# Used by the 'jenkins-packerbuilds' repo
+
+#######################################
+# Used to determine fill-in configurations for 
+# the template file used by HashiCorp's Packer.
+# Globals:
+#   PROGRAM_NAME
+#   build_name
+#   GUEST_OS_TYPE
+#   OS_BUILD_CONF
+#   ISO_FILE
+#   iso_checksum
+#   ISO_IMAGES_PATH
+#   SHELL_PROVISIONER
+#   SHELL_PROVISIONERS_CONFIG_FILE
+#   PACKER_TEMPLATE
+#   JENKINS_GITHUB_CREDENTIAL_SECRET
+# Outputs:
+#   - Writes bare command line interface to stdout
+#   - Writes jq not being found in the PATH to stderr
+#   - the previous template but with _PLACEHOLDER(s) evaluated
+# Returns:
+#   - 1: jq not being found in the PATH
+#######################################
+evaluservars() {
+    # constants
+    local PROGRAM_NAME
+    readonly PROGRAM_NAME="evaluservars"
+
+    local TEMP_FILE_NAME
+    readonly TEMP_FILE_NAME="${PROGRAM_NAME}-temp"
+    if [ -z "$(command -v jq)" ]; then
+        echo "${PROGRAM_NAME}: jq cannot be found in the PATH!" >&2
+        return 1
+    # NOTE(cavcrosby): this is to encourage the notion that this will not have
+    # a fully functional CLI (e.g. ./PROGRAM_NAME -f foo -b bar)
+    elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        cat << _EOF_
+Usage: ${PROGRAM_NAME}
+
+This program does not plan on having a functional command line interface (CLI).
+
+_EOF_
+        return 0
+    fi
+    # check jq documentation, inspired from:
+    # https://stackoverflow.com/questions/53670702/jq-error-test1-0-is-not-defined-at-top-level-line-1#answer-53674099
+    # shellcheck disable=2154
+    jq < "${PACKER_TEMPLATE}" --arg BUILD_NAME "${build_name}" --arg GUEST_OS_TYPE "${GUEST_OS_TYPE}" \
+     --arg OS_BUILD_CONF "${OS_BUILD_CONF}" --arg ISO_FILE "${ISO_FILE}" --arg ISO_CHECKSUM "${iso_checksum}" \
+     --arg ISO_IMAGES_PATH "file://${ISO_IMAGES_PATH}" --arg SHELL_PROVISIONER "${SHELL_PROVISIONER}" \
+     --arg SHELL_PROVISIONERS_CONFIG_FILE "${SHELL_PROVISIONERS_CONFIG_FILE}" \
+     --arg JENKINS_GITHUB_CREDENTIAL_SECRET "${JENKINS_GITHUB_CREDENTIAL_SECRET}" \
+     '. *= (
+        { variables: 
+            {
+            "vm_name": $BUILD_NAME,
+            "ssh_user": "reap2sow1",
+            "ssh_pass": "Passw0rd!",
+            "shutdown_command": "sudo -S shutdown -h now",
+            "guest_os_type": $GUEST_OS_TYPE,
+            "os_build_conf": $OS_BUILD_CONF,
+            "iso_file_name": $ISO_FILE,
+            "iso_file_hash": $ISO_CHECKSUM,
+            "iso_url_local_parent_directory": $ISO_IMAGES_PATH,
+            "shell_provisioner": $SHELL_PROVISIONER,
+            "shell_provisioners_config_file": $SHELL_PROVISIONERS_CONFIG_FILE,
+            "github_secret": $JENKINS_GITHUB_CREDENTIAL_SECRET
+            }
+        }
+    )' > "${TEMP_FILE_NAME}"
+    mv "${TEMP_FILE_NAME}" "${PACKER_TEMPLATE}"
+}

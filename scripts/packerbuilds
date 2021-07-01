@@ -201,7 +201,7 @@ _EOF_
     # further configurations via shell provisioners.
     # NOTE(cavcrosby): ensure builder(s) in packer templates can use 'HTTP' as 
     # a configuration option
-    cp "${PROJECT_SCRIPTS_DIR_PATH}/${PACKER_EVALUSERVARS_NAME}" "${packer_build_root_path}"
+    cp "${PROJECT_SCRIPTS_DIR_PATH}/${PACKER_EVALUSERVARS}" "${packer_build_root_path}"
     cp "${PWD}/${packer_templates_repo_name}/${PACKER_TEMPLATE}" "${packer_build_root_path}"
     cp "${PWD}/${os_build_confs_repo_name}/${OS_BUILD_CONF}" "${packer_build_http_path}"
     cp "${PWD}/${shell_provisioners_repo_name}/${SHELL_PROVISIONERS_CONFIG_FILE}" "${packer_build_http_path}"
@@ -244,8 +244,8 @@ _EOF_
     # shellcheck disable=1090
     # NOTES(cavcrosby): packer templates will have placeholders in them. These
     # will be evaluated based on env vars in the current env.
-    . "${PWD}/${PACKER_EVALUSERVARS_NAME}"
-    "${PACKER_EVALUSERVARS_NAME}"
+    . "${PWD}/${PACKER_EVALUSERVARS}"
+    "${PACKER_EVALUSERVARS}"
 
     # record env vars into a file ==> packerbuilds_conf_path
     if [ -n "${RECORD_BUILDENV_VARS}" ]; then
