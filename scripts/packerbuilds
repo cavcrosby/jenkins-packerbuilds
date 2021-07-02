@@ -14,8 +14,8 @@
 # Outputs:
 #   - Writes var_name not being defined in env to stderr
 # Returns:
-#   0 - all env vars passed in are defined
-#   1 - at least one env var passed in is not defined
+#   - 0: all env vars passed in are defined
+#   - 1: at least one env var passed in is not defined
 #######################################
 # credits go to:
 # https://stackoverflow.com/questions/29278743/how-to-check-if-multiple-variables-are-defined-or-not-in-bash#answer-65396324
@@ -80,6 +80,7 @@ _checkvars() {
 #   - "git" command output to stdout/stderr
 # Returns:
 #   - 0: build success
+#   - 0: usage string was requested
 #   - 1: jq not being found in the PATH
 #   - 1: git not being found in the PATH
 #   - 1: packer executable does not exist at PACKER_EXE_PATH
