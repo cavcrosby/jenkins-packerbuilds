@@ -25,8 +25,7 @@ _checkvars() {
     for var_name in "$@"; do
         if [ -z "${!var_name}" ]; then
             if [ "${var_name}" = "SHELL_PROVISIONER" ] && [ "${BUILD_TYPE}" = "project" ]; then
-                # NOTE(cavcrosby): it is assumed that project builds will have hard coded
-                # their shell provisioners
+                # it is assumed that project builds will have hard coded their shell provisioners
                 continue
             fi
             echo "${PROGRAM_NAME}: ${var_name} is not defined" >&2
@@ -42,7 +41,7 @@ _checkvars() {
 }
 
 #######################################
-# Main build script for the 'jenkins-packerbuilds' project.
+# Main build script for the packerbuilds Jenkins project.
 # Globals:
 #   WORKSPACE                           (from Jenkins env)
 #   OS_BUILD_CONFS_BRANCH               (from .env)
@@ -125,7 +124,7 @@ packerbuilds() {
     packer_templates_repo_name="$(basename "${PACKER_TEMPLATES_REPO_URL}")"
     local packerbuilds_conf_path="${PWD}/packerbuilds.conf"
 
-    # after this point we can assume PWD = WORKSPACE
+    # after this point we can assume 'PWD = WORKSPACE'
     if [ "${PWD}" != "${WORKSPACE}" ]; then
         echo "${PROGRAM_NAME}: was not ran in the Jenkins job workspace dir" >&2
         return 1
@@ -141,8 +140,8 @@ packerbuilds() {
     # we don't want to run packer unless we know we have everything we need
     elif ! _checkvars "${ENV_VAR_NAMES_NEEDED[@]}"; then
         return 1
-    # NOTE(cavcrosby): this is to encourage the notion that this will not have
-    # a fully functional CLI (e.g. ./PROGRAM_NAME -f foo -b bar)
+    # This is to encourage the notion that this will not have a fully functional
+    # CLI (e.g. ./PROGRAM_NAME -f foo -b bar).
     elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         cat << _EOF_
 Usage: ${PROGRAM_NAME}
@@ -173,10 +172,9 @@ _EOF_
     fi
     git clone --branch "${PACKER_TEMPLATES_BRANCH}" "${PACKER_TEMPLATES_REPO_URL}" "${packer_templates_repo_name}"
     
-    # NOTES(cavcrosby): some OS versions contain the dot character in them (usually
-    # more than one). To be used as the default hostname for the VM, those will
-    # need to be replaced. If it was not clear, build_name is used as the
-    # VM name/hostname.
+    # Some OS versions contain the dot character in them (usually more than one).
+    # To be used as the default hostname for the VM, those will need to be replaced.
+    # If it was not clear, build_name is used as the VM name/hostname.
     local build_name
     build_name="${PACKER_BUILDER}"-"${OPERATING_SYSTEM}"-"$(tr '.' '-' <<< "${OPERATING_SYSTEM_VERSION}")"
     if [ -n "${OTHER_BUILD_NAME_CRITERIA}" ]; then
@@ -186,9 +184,9 @@ _EOF_
         rm --recursive --force "${build_name}"
     fi
 
-    # NOTES(cavcrosby): these vars might get used in the future, if I intend on
-    # identifying ISO files or checking by their checksums. Would have to
-    # manage/fetch official checksums from sources.
+    # These vars might get used in the future, if I intend on identifying ISO files
+    # or checking by their checksums. Would have to manage/fetch official checksums
+    # from sources.
     local iso_checksum iso_filename
     read -r iso_checksum sha_iso_filename <<< "$(sha256sum "${ISO_IMAGES_PATH}/${ISO_FILE}")"
 
@@ -199,22 +197,20 @@ _EOF_
     mkdir --parents "${packer_build_shell_provisioners_path}"
 
     # Create a packerbuilds dir that will serve files over http and allocate
-    # further configurations via shell provisioners.
-    # NOTE(cavcrosby): ensure builder(s) in packer templates can use 'HTTP' as 
-    # a configuration option
+    # further configurations via shell provisioners. Ensure builder(s) in packer
+    # templates can use 'HTTP' as a configuration option.
     cp "${PROJECT_SCRIPTS_DIR_PATH}/${PACKER_EVALUSERVARS}" "${packer_build_root_path}"
     cp "${PWD}/${packer_templates_repo_name}/${PACKER_TEMPLATE}" "${packer_build_root_path}"
     cp "${PWD}/${os_build_confs_repo_name}/${OS_BUILD_CONF}" "${packer_build_http_path}"
     cp "${PWD}/${shell_provisioners_repo_name}/${SHELL_PROVISIONERS_CONFIG_FILE}" "${packer_build_http_path}"
     cp "${packerbuilds_conf_path}" "${packer_build_http_path}"
 
-    # NOTES(cavcrosby): with the creation of the notion that there can be
-    # basic/project (e.g. and others) VM builds. Project builds differentiate in
-    # that the shell provisioners can be numerous. Thus, packerbuilds should be
-    # able to aknowledge this and move over the numerous shell provisioners
-    # as needed.
+    # With the creation of the notion that there can be basic/project (e.g. and others)
+    # VM builds. Project builds differentiate in that the shell provisioners can
+    # be numerous. Thus, packerbuilds should be able to aknowledge this and move
+    # over the numerous shell provisioners as needed.
     if [ "${BUILD_TYPE}" = "project" ]; then
-        # grabs each provisioner's script from the script/scripts element
+        # grabs each provisioner's script from the script/scripts element,
         # pscript_name ==> provisioner script name
         for pscript_name in $(jq < "${PWD}/${packer_templates_repo_name}/${PACKER_TEMPLATE}" \
             --raw-output '.["provisioners"][] | .script // .["scripts"][]' | xargs basename --multiple); do
@@ -224,11 +220,10 @@ _EOF_
         cp "${PWD}/${shell_provisioners_repo_name}/${SHELL_PROVISIONER}" "${packer_build_shell_provisioners_path}"
     fi
 
-    # NOTES(cavcrosby): packer supports the notion of local shell post processing and
-    # provisioning (this occurs after the VM boots, regardless whether the
-    # shell code runs on the VM or not) on the local machine but not before
-    # processing the packer template. This is in attempt to create the idea
-    # of shell preprocessing.
+    # Packer supports the notion of local shell post processing and provisioning
+    # (this occurs after the VM boots, regardless whether the shell code runs
+    # on the VM or not) on the local machine but not before processing the packer
+    # template. This is in attempt to create the idea of shell preprocessing.
     # shellcheck disable=1090
     if [ -n "${SHELL_PREPROCESSOR}" ]; then
         if [ -f "${PWD}/${shell_processors_repo_name}/${SHELL_PREPROCESSOR}" ]; then
@@ -243,15 +238,15 @@ _EOF_
     cd "${packer_build_root_path}" || return 1
 
     # shellcheck disable=1090
-    # NOTES(cavcrosby): packer templates will have placeholders in them. These
-    # will be evaluated based on env vars in the current env.
+    # Packer templates will have placeholders in them. These will be evaluated
+    # based on env vars in the current env.
     . "${PWD}/${PACKER_EVALUSERVARS}"
     "${PACKER_EVALUSERVARS}"
 
     # record env vars into a file ==> packerbuilds_conf_path
     if [ -n "${RECORD_BUILDENV_VARS}" ]; then
-        read -r -a ENV_VAR_NAME_ARR <<< "${RECORD_BUILDENV_VARS}"
-        for env_var in "${ENV_VAR_NAME_ARR[@]}"; do
+        read -r -a env_var_name_arr <<< "${RECORD_BUILDENV_VARS}"
+        for env_var in "${env_var_name_arr[@]}"; do
             echo "${env_var}: ${!env_var}" >> "${PWD}/$(basename "${packerbuilds_conf_path}")"
         done
     fi

@@ -1,8 +1,11 @@
 #!/bin/bash -xe
-# NOTES: do not rely on jenkins user global git config file
-# as future projects (this one included) will truncate the generic credential list.
-# What I expect is that cache will allow the program to stash its credentials in memory,
-# meaning it will no longer rely on the global config after the first time (assuming the timeout is adequate).
+# Do not rely on jenkins user global git config file as future projects (this
+# one included) will truncate the generic credential list.
+#
+# What I expect is that cache will allow the program to stash its credentials
+# in memory, meaning it will no longer rely on the global config after the
+# first time (assuming the timeout is adequate).
+#
 # TODO(cavcrosby): see about re-implementing this part to allow usage of the global git configuration. Otherwise it will be more cumbersome to get the system user the repos needed/desired.
 # TODO(cavcrosby): currently parameterizedcrons have everything hard coded for each parameter to each cron job. Perhaps change this to be evaluated like each Jenkins job parameter?
 # TODO(cavcrosby): GitHub sees .tpl files associated with the web template system called Smarty. Perhaps change this to something different?

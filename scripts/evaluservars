@@ -35,8 +35,8 @@ evaluservars() {
     if [ -z "$(command -v jq)" ]; then
         echo "${PROGRAM_NAME}: jq cannot be found in the PATH!" >&2
         return 1
-    # NOTE(cavcrosby): this is to encourage the notion that this will not have
-    # a fully functional CLI (e.g. ./PROGRAM_NAME -f foo -b bar)
+    # This is to encourage the notion that this will not have a fully functional
+    # CLI (e.g. ./PROGRAM_NAME -f foo -b bar).
     elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         cat << _EOF_
 Usage: ${PROGRAM_NAME}

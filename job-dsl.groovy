@@ -12,8 +12,8 @@ freeStyleJob ('packerbuilds') {
     */
 
     // Allows Jenkins to schedule and execute multiple builds concurrently.
-    // NOTE: To add, I've seen odd behavior doing concurrent packerbuilds 
-    // builds, so for now it's best todo them one at a time.
+    // To add, I've seen odd behavior doing concurrent packerbuilds builds, so for
+    // now it's best todo them one at a time.
     concurrentBuild(false) 
 
     logRotator {
@@ -193,7 +193,7 @@ freeStyleJob ('packerbuilds') {
             remote {
                 // a shorten tenary operator...the elvis operator!
                 // https://groovy-lang.org/operators.html#_elvis_operator
-                // NOTE: aside, this is also a job binding but should not conflict
+                // Aside, this is also a credential job binding but these should not conflict.
                 credentials(System.getenv('JENKINS_GITHUB_CREDENTIAL_ID') ?: '')
                 url('https://github.com/cavcrosby/jenkins-packerbuilds')
             }

@@ -3,9 +3,8 @@
 .RECIPEPREFIX := >
 
 # recursive variables
-# NOTE: for some reason /bin/sh does not have the 'command' builtin despite
-# it being a POSIX requirement, then again one system has /bin as a
-# symlink to /usr/bin
+# For some reason /bin/sh does not have the 'command' builtin despite it being
+# a POSIX requirement, then again one system has /bin as a symlink to '/usr/bin'.
 SHELL = /usr/bin/sh
 ENVSUBST = envsubst
 EXECUTABLES = \
@@ -23,13 +22,13 @@ PARAM_WILDCARD := %${PARAM_EXT}
 PARAM_TEMPLATE_WILDCARD := %${PARAM_TEMPLATE_EXT}
 PARAM_TEMPLATES := $(shell find ${PARAMS_DIR_PATH} -name *${PARAM_TEMPLATE_EXT})
 
-# NOTES: determines the param(s) name to be generated from the template(s).
+# Determines the param(s) name to be generated from the template(s).
 # Short hand notation for string substitution: $(text:pattern=replacement).
 PARAMS := $(PARAM_TEMPLATES:${PARAM_TEMPLATE_WILDCARD}=${PARAM_WILDCARD})
 
-# NOTES: e ==> executable, certain executables should exist before 
-# running. Inspired from:
+# Certain executables should exist before running. Inspired from:
 # https://stackoverflow.com/questions/5618615/check-if-a-program-exists-from-a-makefile#answer-25668869
+# e ==> executable
 _CHECK_EXECUTABLES := $(foreach e,${EXECUTABLES},$(if $(shell command -v ${e}),pass,$(error "No ${e} in PATH")))
 
 .PHONY: help
