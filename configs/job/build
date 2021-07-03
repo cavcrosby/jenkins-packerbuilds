@@ -8,7 +8,6 @@
 #
 # TODO(cavcrosby): see about re-implementing this part to allow usage of the global git configuration. Otherwise it will be more cumbersome to get the system user the repos needed/desired.
 # TODO(cavcrosby): currently parameterizedcrons have everything hard coded for each parameter to each cron job. Perhaps change this to be evaluated like each Jenkins job parameter?
-# TODO(cavcrosby): GitHub sees .tpl files associated with the web template system called Smarty. Perhaps change this to something different?
 
 git config --global credential.helper "cache --timeout=30"
 git config --global credential.username "${JENKINS_GITHUB_CREDENTIAL_USERNAME}"

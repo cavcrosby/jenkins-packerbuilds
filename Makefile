@@ -17,7 +17,7 @@ PARAMS_CONFIG_FILE_PATH := ./configs/job/parameters/parameters.conf
 PARAMS_DIR_PATH := ./configs/job/parameters
 # ext ==> extension
 PARAM_EXT := .groovy
-PARAM_TEMPLATE_EXT := .groovy.tpl
+PARAM_TEMPLATE_EXT := .groovy.shtpl
 PARAM_WILDCARD := %${PARAM_EXT}
 PARAM_TEMPLATE_WILDCARD := %${PARAM_TEMPLATE_EXT}
 PARAM_TEMPLATES := $(shell find ${PARAMS_DIR_PATH} -name *${PARAM_TEMPLATE_EXT})
