@@ -7,9 +7,4 @@ switch (criteria){
             "${OPERATING_SYSTEM_UBUNTU}:selected",
             "${OPERATING_SYSTEM_DEBIAN}"
         ]
-    case {it == ["${BUILD_TYPE_PROJECT}", "${PROJECT_SHELLFUNCS}"]}:
-        return [
-            "${OPERATING_SYSTEM_DEBIAN}:selected",
-            "${OPERATING_SYSTEM_UBUNTU}"
-        ]
 }
