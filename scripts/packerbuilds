@@ -20,8 +20,7 @@
 # credits go to:
 # https://stackoverflow.com/questions/29278743/how-to-check-if-multiple-variables-are-defined-or-not-in-bash#answer-65396324
 _checkvars() {
-    # ndefined ==> not defined
-    local var_ndefined=false
+    local var_not_defined="${FALSE}"
     for var_name in "$@"; do
         if [ -z "${!var_name}" ]; then
             if [ "${var_name}" = "SHELL_PROVISIONER" ] && [ "${BUILD_TYPE}" = "project" ]; then
@@ -29,12 +28,12 @@ _checkvars() {
                 continue
             fi
             echo "${PROGRAM_NAME}: ${var_name} is not defined" >&2
-            var_ndefined=true
+            var_not_defined="${TRUE}"
         fi
     done
-    # for reference on why just 'if [ ${var_ndefined} ];...' is a bad idea:
+    # for reference on why just 'if [ ${var_not_defined} ];...' is a bad idea:
     # https://stackoverflow.com/questions/2953646/how-can-i-declare-and-use-boolean-variables-in-a-shell-script#answer-21210966
-    if [ "${var_ndefined}" = true ]; then
+    if (( var_not_defined )); then
         return 1
     fi
     return 0
@@ -92,6 +91,12 @@ packerbuilds() {
     # constants
     local PROGRAM_NAME
     readonly PROGRAM_NAME="packerbuilds"
+
+    local FALSE
+    readonly FALSE=0
+
+    local TRUE
+    readonly TRUE=1
     # repo urls
     local OS_BUILD_CONFS_REPO_URL
     readonly OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
@@ -211,10 +216,9 @@ _EOF_
     # over the numerous shell provisioners as needed.
     if [ "${BUILD_TYPE}" = "project" ]; then
         # grabs each provisioner's script from the script/scripts element,
-        # pscript_name ==> provisioner script name
-        for pscript_name in $(jq < "${PWD}/${packer_templates_repo_name}/${PACKER_TEMPLATE}" \
+        for provisioner_script in $(jq < "${PWD}/${packer_templates_repo_name}/${PACKER_TEMPLATE}" \
             --raw-output '.["provisioners"][] | .script // .["scripts"][]' | xargs basename --multiple); do
-            cp "${PWD}/${shell_provisioners_repo_name}/${pscript_name}" "${packer_build_shell_provisioners_path}"
+            cp "${PWD}/${shell_provisioners_repo_name}/${provisioner_script}" "${packer_build_shell_provisioners_path}"
         done
     else
         cp "${PWD}/${shell_provisioners_repo_name}/${SHELL_PROVISIONER}" "${packer_build_shell_provisioners_path}"

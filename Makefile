@@ -11,11 +11,9 @@ EXECUTABLES = \
 	${ENVSUBST}
 
 # simply expanded variables
-# param ==> parameter
 PARAMS_CONFIG_FILE_PATH := ./configs/job/parameters/parameters.conf
 # TODO(cavcrosby): adding another '/' to the end of the dir will cause make to fail. Maybe integrate pathjoin? (will need to be reimplemented in just sh vs bash).
 PARAMS_DIR_PATH := ./configs/job/parameters
-# ext ==> extension
 PARAM_EXT := .groovy
 PARAM_TEMPLATE_EXT := .groovy.shtpl
 PARAM_WILDCARD := %${PARAM_EXT}
@@ -28,8 +26,7 @@ PARAMS := $(PARAM_TEMPLATES:${PARAM_TEMPLATE_WILDCARD}=${PARAM_WILDCARD})
 
 # Certain executables should exist before running. Inspired from:
 # https://stackoverflow.com/questions/5618615/check-if-a-program-exists-from-a-makefile#answer-25668869
-# e ==> executable
-_CHECK_EXECUTABLES := $(foreach e,${EXECUTABLES},$(if $(shell command -v ${e}),pass,$(error "No ${e} in PATH")))
+_CHECK_EXECUTABLES := $(foreach exec,${EXECUTABLES},$(if $(shell command -v ${exec}),pass,$(error "No ${exec} in PATH")))
 
 .PHONY: help
 help:
