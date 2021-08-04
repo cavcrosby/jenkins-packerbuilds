@@ -20,7 +20,7 @@
 # Outputs:
 #   - Writes bare command line interface to stdout
 #   - Writes jq not being found in the PATH to stderr
-#   - the previous template but with _PLACEHOLDER(s) evaluated
+#   - the previous template but with __PLACEHOLDER__(s) evaluated
 # Returns:
 #   - 0: usage string was requested
 #   - 1: jq not being found in the PATH
