@@ -99,7 +99,7 @@ packerbuilds() {
     readonly TRUE=1
     # repo urls
     local OS_BUILD_CONFS_REPO_URL
-    readonly OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-build-confs"
+    readonly OS_BUILD_CONFS_REPO_URL="https://github.com/cavcrosby/os-init-confs"
 
     local SHELL_PROVISIONERS_REPO_URL
     readonly SHELL_PROVISIONERS_REPO_URL="https://github.com/cavcrosby/packer-shell-provisioners"
