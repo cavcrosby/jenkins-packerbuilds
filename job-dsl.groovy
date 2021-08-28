@@ -3,17 +3,19 @@ freeStyleJob ('packerbuilds') {
     /*
     #   For Job-DSL API reference see: https://jenkinsci.github.io/job-dsl-plugin/
     #  
-    #   The following bindings will need to be added manually to packerbuilds 
+    #   The following bindings will need to be added manually to packerbuilds
     #   job/project configuration.
     #   Username variable/password variable respectfully:
-    #   JENKINS_GITHUB_CREDENTIAL_USERNAME 
+    #   JENKINS_GITHUB_CREDENTIAL_USERNAME
     #   JENKINS_GITHUB_CREDENTIAL_SECRET
     #
     */
 
-    // Allows Jenkins to schedule and execute multiple builds concurrently.
-    // To add, I've seen odd behavior doing concurrent packerbuilds builds, so for
-    // now it's best todo them one at a time.
+    /* 
+        Allows Jenkins to schedule and execute multiple builds concurrently. To add,
+        I've seen odd behavior doing concurrent packerbuilds builds, so for now it's
+        best todo them one at a time.
+    */
     concurrentBuild(false) 
 
     logRotator {
@@ -24,9 +26,8 @@ freeStyleJob ('packerbuilds') {
     // Allows to parameterize the job. 
     parameters {
         /* 
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the 
-            Scriptler catalog.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
         */
         activeChoiceParam('BUILD_TYPE') {
             description('')
@@ -50,10 +51,9 @@ freeStyleJob ('packerbuilds') {
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the
-            Scriptler catalog. The choices dynamically update when the value of
-            BUILD_TYPE or PROJECT parameter is picked.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
+            The choices dynamically update when the value of BUILD_TYPE or PROJECT parameter is picked.
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM') {
             description('')
@@ -68,10 +68,9 @@ freeStyleJob ('packerbuilds') {
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the 
-            Scriptler catalog. The choices dynamically update when the value of 
-            OPERATING_SYSTEM parameter is picked.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
+            The choices dynamically update when the value of OPERATING_SYSTEM parameter is picked.
         */
         activeChoiceReactiveParam('OPERATING_SYSTEM_VERSION') {
             description('')
@@ -96,10 +95,10 @@ freeStyleJob ('packerbuilds') {
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the 
-            Scriptler catalog. The choices dynamically update when the value of
-            OPERATING_SYSTEM_VERSION or OPERATING_SYSTEM parameter is picked.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
+            The choices dynamically update when the value of OPERATING_SYSTEM_VERSION or
+            OPERATING_SYSTEM parameter is picked.
         */
         activeChoiceReactiveParam('ISO_FILE') {
             description('')
@@ -114,10 +113,10 @@ freeStyleJob ('packerbuilds') {
         }
 
         /* 
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the 
-            Scriptler catalog. The choices dynamically update when the value of
-            ISO_FILE or OPERATING_SYSTEM parameter is picked.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
+            The choices dynamically update when the value of ISO_FILE or OPERATING_SYSTEM
+            parameter is picked.
         */
         activeChoiceReactiveParam('PACKER_BUILDER') {
             description('')
@@ -132,10 +131,9 @@ freeStyleJob ('packerbuilds') {
         }
 
         /*
-            Defines a parameter that dynamically generates a list of value options
-            for a build parameter using a Groovy script or a script from the 
-            Scriptler catalog. The default value dynamically updates when the value of
-            PROJECT is picked.
+            Defines a parameter that dynamically generates a list of value options for a
+            build parameter using a Groovy script or a script from the Scriptler catalog.
+            The default value dynamically updates when the value of PROJECT is picked.
         */
         activeChoiceReactiveReferenceParam('SHELL_PREPROCESSOR') {
             description('The name of a shell script located in the respective repo to source (e.g. not running, sourced into the same shell session) before running packer.')
@@ -191,9 +189,11 @@ freeStyleJob ('packerbuilds') {
     scm {
         git {
             remote {
-                // a shorten tenary operator...the elvis operator!
-                // https://groovy-lang.org/operators.html#_elvis_operator
-                // Aside, this is also a credential job binding but these should not conflict.
+                /* 
+                    A shorten tenary operator...the elvis operator!
+                    https://groovy-lang.org/operators.html#_elvis_operator
+                    Aside, this is also a credential job binding but these should not conflict.
+                */
                 credentials(System.getenv('JENKINS_GITHUB_CREDENTIAL_ID') ?: '')
                 url('https://github.com/cavcrosby/jenkins-packerbuilds')
             }
@@ -204,14 +204,14 @@ freeStyleJob ('packerbuilds') {
     // Adds build triggers to the job.
     triggers {
         /*  
-            Adds support for passing parameters to parameterized 
-            builds on top of the default scheduler. 
+            Adds support for passing parameters to parameterized builds on top of the
+            default scheduler.
         */
         parameterizedCron {
 
             /* 
-                follow convention of cron, schedule with name=value 
-                pairs at the end of each line. 
+                Follow convention of cron, schedule with name=value pairs at the end of each
+                line. 
             */
             parameterizedSpecification(readFileFromWorkspace('./configs/job/parameterizedcrons'))
 
@@ -224,13 +224,11 @@ freeStyleJob ('packerbuilds') {
         credentialsBinding {
             usernamePassword {
                 /* 
-                    Name of an environment variable to be set 
-                    to the username during the build.
+                    Name of an environment variable to be set to the username during the build.
                 */
                 usernameVariable("JENKINS_GITHUB_CREDENTIAL_USERNAME ")
                 /* 
-                    Name of an environment variable to be set 
-                    to the password during the build.
+                    Name of an environment variable to be set to the password during the build.
                 */
                 passwordVariable("JENKINS_GITHUB_CREDENTIAL_SECRET")
                 // Credentials of an appropriate type to be set to the variable.
@@ -239,8 +237,8 @@ freeStyleJob ('packerbuilds') {
         }
 
         /* 
-            defines an absolute timeout with a maximum 
-            build time of one hour and thirty minutes
+            Defines an absolute timeout with a maximum  build time of one hour and thirty
+            minutes.
         */
         timeout {
             absolute(90)
@@ -258,16 +256,16 @@ freeStyleJob ('packerbuilds') {
         archiveArtifacts('*/output/*')
 
         /* 
-            If configured, Jenkins will send out an e-mail to 
-            the specified recipients when a certain important event occurs. 
+            If configured, Jenkins will send out an e-mail to the specified recipients
+            when a certain important event occurs. 
         */
         mailer {
             recipients('conner@cavcrosby.tech')
             notifyEveryUnstableBuild(true)
             /* 
-                If this option is checked, the notification e-mail will be sent 
-                to individuals who have committed changes for the broken build 
-                (by assuming that those changes broke the build).
+                If this option is checked, the notification e-mail will be sent to individuals
+                who have committed changes for the broken build (by assuming that those
+                changes broke the build).
             */
             sendToIndividuals(false) 
         }
