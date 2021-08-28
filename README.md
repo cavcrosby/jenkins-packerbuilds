@@ -16,11 +16,11 @@ Same recommendation as above, if you intend to use the job as currently implemen
   - Holds kickstart/preseeds, these files allow fully automatic installations for some Linux operating systems.
   - https://en.wikipedia.org/wiki/Kickstart_(Linux)
   - https://en.wikipedia.org/wiki/Preseed
-- https://github.com/cavcrosby/packer-build-templates
+- https://github.com/cavcrosby/packer-templates
   - Holds packer build templates.
   - Contains a script(s) used to evaluate placeholders in these templates.
   - https://www.packer.io/docs/templates
-- https://github.com/cavcrosby/packer-build-shell-provisioners
+- https://github.com/cavcrosby/packer-shell-provisioners
   - Holds shell scripts that packer uses as a provisioner.
   - https://www.packer.io/docs/provisioners/shell
 
