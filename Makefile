@@ -22,11 +22,11 @@ param_wildcard := %${PARAM_EXT}
 SHELL_TEMPLATE_EXT := .shtpl
 param_shell_template_ext := ${PARAM_EXT}${SHELL_TEMPLATE_EXT}
 param_shell_template_wildcard := %${param_shell_template_ext}
-param_shell_template_wildcard := $(shell find ${PARAMS_DIR_PATH} -name *${param_shell_template_ext})
+param_shell_templates := $(shell find ${PARAMS_DIR_PATH} -name *${param_shell_template_ext})
 
 # Determines the param(s) name to be generated from the template(s).
 # Short hand notation for string substitution: $(text:pattern=replacement).
-params := $(param_shell_template_wildcard:${param_shell_template_wildcard}=${param_wildcard})
+params := $(param_shell_templates:${param_shell_template_wildcard}=${param_wildcard})
 
 .PHONY: help
 help:
