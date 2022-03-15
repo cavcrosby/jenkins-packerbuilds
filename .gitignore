@@ -1,4 +1,2 @@
 # repo specific
-
-# groovy files in this dir are dynamically generated when needed
 configs/job/parameters/*.groovy
